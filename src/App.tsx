@@ -1,11 +1,16 @@
 import React from 'react';
 import ProfilePage from './pages/Profile/Profile';
+import { Route, Routes } from 'react-router-dom';
+import PhotoUpload from './pages/PhotoUpload/PhotoUpload';
 
 const App: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white">
-      <ProfilePage />
-    </div>
+    <>
+      <Routes>
+        <Route path='/profile' element={<ProfilePage />} />
+        <Route path='/upload' element={<PhotoUpload />} />
+      </Routes>
+    </>
   );
 };
 

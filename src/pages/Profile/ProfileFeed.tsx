@@ -1,11 +1,13 @@
 import React from 'react';
 import { DUMMY_POSTS, type Post } from '../../constants/dummyData';
+import { Link } from 'react-router-dom';
 
 interface ProfileFeedProps {
   onPhotoClick: (post: Post) => void;
 }
 
 const ProfileFeed: React.FC<ProfileFeedProps> = ({ onPhotoClick }) => {
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
       <header className="flex flex-col md:flex-row justify-between mb-20 gap-8">
@@ -16,7 +18,9 @@ const ProfileFeed: React.FC<ProfileFeedProps> = ({ onPhotoClick }) => {
           <p className="mt-6 text-[11px] font-bold tracking-[0.2em] text-gray-800">FROM: SEOUL, SOUTH KOREA</p>
         </div>
         <div className="flex-1 md:max-w-sm pt-2">
-          <span className="text-3xl font-light text-gray-300 block mb-4">+</span>
+          <Link to="/upload" className="block w-fit">
+            <span className="text-3xl font-light text-gray-300 block mb-4 cursor-pointer hover:text-gray-500 transition-colors">+</span>
+          </Link>
           <p className="text-[12px] leading-relaxed text-gray-600">
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </p>
@@ -25,8 +29,8 @@ const ProfileFeed: React.FC<ProfileFeedProps> = ({ onPhotoClick }) => {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {DUMMY_POSTS.map((post: Post) => (
-          <div 
-            key={post.id} 
+          <div
+            key={post.id}
             className="aspect-square bg-gray-100 overflow-hidden cursor-pointer transition-opacity hover:opacity-80 group"
             onClick={() => onPhotoClick(post)}
           >
