@@ -21,7 +21,7 @@ export const DUMMY_POSTS: Post[] = [
     imageUrl: 'https://picsum.photos/id/28/800/1000',
     title: '해변의 휴식',
     location: 'WAIKIKI, HAWAII',
-    description: "It has survived not only five centuries.",
+    description: "It has survived not only five centuries, but also the leap into electronic typesetting.",
     device: 'SHOT ON IPHONE 13'
   },
   {
