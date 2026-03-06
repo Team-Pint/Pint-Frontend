@@ -6,6 +6,7 @@ const PhotoUpload = () => {
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [imageValue, setImageValue] = useState<File | null>(null);
     const [placeValue, setPlaceValue] = useState<string>('');
+    const [cameraValue, setCameraValue] = useState<string>('');
     const [descriptionValue, setDescriptionValue] = useState<string>('');
     const [filterValue, setFilterValue] = useState<string>('');
 
@@ -39,7 +40,7 @@ const PhotoUpload = () => {
     const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!imageValue || !placeValue || !descriptionValue) {
+        if (!imageValue || !placeValue || !cameraValue || !descriptionValue || !filterValue) {
             alert('필수 항목을 입력해 주세요');
             return;
         }
@@ -89,6 +90,18 @@ const PhotoUpload = () => {
                             value={placeValue}
                             onChange={(e) => setPlaceValue(e.target.value)}
                             placeholder="사진을 찍은 장소를 입력하세요"
+                            className="w-full border border-gray-400 rounded p-3 text-sm placeholder-gray-400 focus:outline-none focus:border-black transition-colors"
+                        />
+                    </div>
+
+                    {/* 카메라 */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-800 mb-2">카메라</label>
+                        <input
+                            type="text"
+                            value={cameraValue}
+                            onChange={(e) => setCameraValue(e.target.value)}
+                            placeholder="사용한 카메라 정보를 입력하세요"
                             className="w-full border border-gray-400 rounded p-3 text-sm placeholder-gray-400 focus:outline-none focus:border-black transition-colors"
                         />
                     </div>
