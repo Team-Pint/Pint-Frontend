@@ -12,7 +12,7 @@ function App() {
   return (
     <Routes>
       {/* 프로필 페이지 경로 설정: 
-        사용자 아이디(userId)를 URL 파라미터로 받습니다. 
+        사용자 아이디(userId)를 URL 파라미터로 받음. 
       */}
       <Route path="/profile/:userId" element={<ProfileRouteWrapper />} />
 
