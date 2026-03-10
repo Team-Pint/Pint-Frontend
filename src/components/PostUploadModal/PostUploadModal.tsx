@@ -47,7 +47,7 @@ const PostUploadModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
         // API 연동 코드 추가'
 
-        navigate('/profile');
+        navigate('/profile/1');
         onClose();
     }
 
