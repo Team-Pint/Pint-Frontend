@@ -21,7 +21,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   useEffect(() => {
     const mockData: ProfileResponse = {
       username: "최 소영",
-      description: "SEOUL-BASED GRAPHIC DESIGNER AND PHOTOGRAPHER. FOCUSING ON MINIMALISM AND ARCHITECTURAL STRUCTURES.",
+      description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to ",
       city: "SEOUL, KOREA",
       email: "soyoung@example.com",
       isMe: true,
@@ -55,7 +55,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
             <div className={infoWrapper}>
               {isMe && (
                 <button className={editBtn}>
-                  <Pencil size={10} strokeWidth={2.5} /> Edit Profile
+                  <Pencil size={10} strokeWidth={2.5} /> Edit
                 </button>
               )}
               <p className={descriptionText}>{description}</p>
@@ -73,7 +73,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
                   ...post,
                   location: city,
                   camera: "LEICA M11",
-                  description: "Visual exploration.",
+                  description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release",
                   username,
                   profileImage,
                   isWriter: isMe

@@ -37,7 +37,7 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
             </div>
 
             {/* 오른쪽 섹션 (정보 입력 필드) */}
-            <div className="flex w-1/2 flex-col justify-center px-12 py-10 space-y-6">
+            <div className="flex w-1/2 flex-col justify-center px-8 py-10 space-y-6">
                 {/* 장소 */}
                 <div className="space-y-2">
                     <label className="text-sm">장소</label>
@@ -46,7 +46,7 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
                         placeholder="사진을 찍은 장소를 입력하세요"
                         value={data.location}
                         onChange={(e) => setData({ ...data, location: e.target.value })}
-                        className="mt-2 rounded-lg w-full text-sm border p-4 text-xs outline-none focus:border-black transition-colors"
+                        className="mt-2 rounded-lg w-full text-sm border border-black p-4 text-xs outline-none"
                     />
                 </div>
 
@@ -57,7 +57,7 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
                         <label
                             htmlFor={data.filterFile ? undefined : "filter-upload"}
                             onClick={(e) => data.filterFile && e.preventDefault()}
-                            className={`mt-2 flex items-center w-full px-4 py-3 rounded-lg border ${data.filterFile ? "cursor-default" : "cursor-pointer"}`}
+                            className={`mt-2 flex items-center w-full px-4 py-3 rounded-lg border border-black ${data.filterFile ? "cursor-default" : "cursor-pointer"}`}
                         >
                             <img src="/images/ic_upload.svg" alt="파일 업로드" className="w-5 h-5 mr-3 flex-shrink-0" />
                             <span className={`text-xs flex-grow truncate ${data.filterFile ? 'text-black' : 'text-gray-400'}`}>
@@ -90,7 +90,7 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
                     <label className="text-sm">설명</label>
                     <textarea
                         placeholder="사진에 대한 설명을 입력하세요"
-                        className="mt-1 w-full flex-grow rounded-lg border p-4 text-xs outline-none resize-none h-30"
+                        className="mt-1 w-full flex-grow rounded-lg border border-black p-4 text-xs outline-none resize-none h-32"
                         value={data.description}
                         onChange={(e) => setData({ ...data, description: e.target.value })} />
                 </div>
