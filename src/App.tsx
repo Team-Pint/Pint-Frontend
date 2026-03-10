@@ -19,12 +19,7 @@ function App() {
       {/* 기본 경로(/) 접속 시 테스트를 위해 1번 유저의 프로필로 이동 */}
       <Route path="/" element={<Navigate to="/profile/1" />} />
 
-      {/* 기타 정의되지 않은 경로는 404 메시지 출력 */}
-      <Route path="*" element={
-        <div className="flex items-center justify-center h-screen">
-          <p className="text-gray-500 font-serif text-xl">Page Not Found</p>
-        </div>
-      } />
+    
     </Routes>
   );
 }

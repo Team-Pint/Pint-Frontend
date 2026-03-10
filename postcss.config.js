@@ -1,7 +1,8 @@
 // postcss.config.js
 export default {
   plugins: {
-    '@tailwindcss/postcss': {}, // 'tailwindcss'에서 이 명칭으로 변경
-    autoprefixer: {},
+    // v3로 낮췄으므로 다시 'tailwindcss' 명칭을 사용합니다.
+    'tailwindcss': {}, 
+    'autoprefixer': {},
   },
 }
