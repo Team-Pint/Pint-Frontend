@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Pencil, Upload } from 'lucide-react';
 import PostDetailModal from './PostDetailModal';
-import type { ProfileResponse, PostDetail } from '../../types/profile';
+import type { ProfileResponse, PostDetail } from '../../types/ProfileData';
 import { cn } from '../../lib/utils';
 import { PROFILE_STYLES as styles } from '../../constants/styles';
 

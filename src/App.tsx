@@ -1,8 +1,5 @@
-import React from 'react';
-import ProfilePage from './pages/Profile/Profile';
-import PhotoUpload from './pages/PhotoUpload/PhotoUpload';
 import Home from './pages/Home/Home';
-import { Routes, Route, useParams, Navigate } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import Profile from './pages/Profile/Profile'
 
 // URL 파라미터 :userId를 추출하여 ProfilePage에 전달하는 컴포넌트
@@ -18,7 +15,6 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path="/profile/:userId" element={<ProfileRouteWrapper />} />
-        <Route path='/upload' element={<PhotoUpload />} />
       </Routes>
     </>
   );

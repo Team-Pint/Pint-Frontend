@@ -1,8 +1,8 @@
 import React from 'react';
 import { X, Pencil, Trash2, Info } from 'lucide-react';
-import { type PostDetail } from '../../types/profile';
 import { cn } from '../../lib/utils';
 import { DETAIL_MODAL_STYLES as styles } from '../../constants/styles';
+import type { PostDetail } from '../../types/ProfileData';
 
 interface DetailModalProps {
   post: PostDetail;
