@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Pencil, Upload } from 'lucide-react';
+import { Pencil } from 'lucide-react'; // Search, Upload는 헤더로 갔으니 삭제
 import PostDetailModal from './PostDetailModal';
 import type { ProfileResponse, PostDetail } from '../../types/ProfileData';
 import { cn } from '../../lib/utils';
@@ -10,18 +10,17 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   const [selectedPost, setSelectedPost] = useState<PostDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 구조 분해 할당으로 스타일 추출
+  // 헤더 관련 스타일 변수들은 여기서 제거했습니다.
   const {
     container, wrapper, loadingState,
-    headerRoot, logo, searchWrapper, searchInput, btnGroup, uploadBtn, avatar,
-    profileSection, nameWrapper, nameItem, infoWrapper, editBtn, descriptionText, locationText, emailText,
+    profileSection, nameWrapper, nameItem, infoWrapper, editBtn, 
+    descriptionText, locationText, emailText,
     gridContainer, gridItem, gridImage, gridOverlay
   } = styles;
 
   useEffect(() => {
-    // API 연동 전 목업 데이터
     const mockData: ProfileResponse = {
-      username: "최소영",
+      username: "최 소영",
       description: "SEOUL-BASED GRAPHIC DESIGNER AND PHOTOGRAPHER. FOCUSING ON MINIMALISM AND ARCHITECTURAL STRUCTURES.",
       city: "SEOUL, KOREA",
       email: "soyoung@example.com",
@@ -44,25 +43,12 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
     <div className={cn(container, !!selectedPost && "overflow-hidden h-screen")}>
       <div className={wrapper}>
         
-        <header className={headerRoot}>
-          <div className="flex items-center gap-16">
-            <h1 className={logo}>Pint.</h1>
-            <div className={searchWrapper}>
-              <Search size={14} className="text-gray-400" />
-              <input type="text" placeholder="Search" className={searchInput} />
-            </div>
-          </div>
-          <div className={btnGroup}>
-            <button className={uploadBtn}>
-              <Upload size={12} strokeWidth={3} /> Upload
-            </button>
-            <img src={profileImage} className={avatar} alt="me" />
-          </div>
-        </header>
+        {/* ❌ <header> 섹션 제거됨 (App.tsx의 공통 Header 사용) */}
 
-        <main>
+        <main className="mt-4"> {/* 헤더와의 적절한 간격을 위해 마진 추가 */}
           <section className={profileSection}>
             <div className={nameWrapper}>
+              {/* 이름 사이 공백이 있으면 줄바꿈 처리 */}
               {username.split(' ').map((name, i) => (
                 <span key={i} className={nameItem}>{name}</span>
               ))}
