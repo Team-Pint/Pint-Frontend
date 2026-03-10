@@ -62,7 +62,7 @@ const PostUploadModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 </button>
 
                 {/* 단계별 모달창 */}
-                <div className="flex min-h-[550px]">
+                <div className="flex min-h-[550px] w-full">
                     {/* 1단계 (사진 선택) */}
                     {step === 1 && (
                         <PhotoSelectStep

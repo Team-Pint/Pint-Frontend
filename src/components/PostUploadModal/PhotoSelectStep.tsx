@@ -10,7 +10,7 @@ interface Props {
 
 const PhotoSelectStep: React.FC<Props> = ({ previewImage, handleImageChange, onReset, onNext }) => {
     return (
-        <div className="flex w-full flex-col items-center justify-center p-12">
+        <div className="flex flex-1 items-center justify-center p-12">
             {!previewImage ? (
                 // 사진 선택 전
                 <div className="flex w-full max-w-md flex-col items-center justify-center rounded-xl border-1 border-black py-20 group cursor-pointer">

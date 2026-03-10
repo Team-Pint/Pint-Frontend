@@ -28,20 +28,23 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
     const isSubmitDisabled = !data.location || !data.description || !data.filterFile || isLoading;
 
     return (
-        <div className="flex w-full animate-in slide-in-from-right duration-500">
+        <div className="flex flex-1 px-10 items-center justify-center">
             {/* 왼쪽 섹션 (사진 미리보기) */}
-            <div className="flex w-1/2 items-center justify-center p-15">
-                <img src={data.previewImage} alt="미리보기" />
+            <div className="flex w-1/2 items-center justify-center p-12">
+                <div className="w-full max-h-[450px] flex items-center justify-center overflow-hidden">
+                    <img src={data.previewImage} alt="미리보기" className="w-full h-full object-contain" />
+                </div>
             </div>
 
             {/* 오른쪽 섹션 (정보 입력 필드) */}
-            <div className="flex w-1/2 flex-col pr-20 py-15 space-y-8">
+            <div className="flex w-1/2 flex-col justify-center px-12 py-10 space-y-6">
                 {/* 장소 */}
                 <div className="space-y-2">
                     <label className="text-sm">장소</label>
                     <input
                         type="text"
                         placeholder="사진을 찍은 장소를 입력하세요"
+                        value={data.location}
                         onChange={(e) => setData({ ...data, location: e.target.value })}
                         className="mt-2 rounded-lg w-full text-sm border p-4 text-xs outline-none focus:border-black transition-colors"
                     />
@@ -83,7 +86,7 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
                 </div>
 
                 {/* 설명 */}
-                <div className="flex flex-col flex-grow space-y-2">
+                <div className="flex flex-col space-y-2">
                     <label className="text-sm">설명</label>
                     <textarea
                         placeholder="사진에 대한 설명을 입력하세요"
