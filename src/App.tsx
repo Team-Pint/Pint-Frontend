@@ -1,3 +1,7 @@
+import React from 'react';
+import ProfilePage from './pages/Profile/Profile';
+import PhotoUpload from './pages/PhotoUpload/PhotoUpload';
+import Home from './pages/Home/Home';
 import { Routes, Route, useParams, Navigate } from 'react-router-dom';
 import Profile from './pages/Profile/Profile'
 
@@ -10,17 +14,13 @@ const ProfileRouteWrapper = () => {
 
 function App() {
   return (
-    <Routes>
-      {/* 프로필 페이지 경로 설정: 
-        사용자 아이디(userId)를 URL 파라미터로 받음. 
-      */}
-      <Route path="/profile/:userId" element={<ProfileRouteWrapper />} />
-
-      {/* 기본 경로(/) 접속 시 테스트를 위해 1번 유저의 프로필로 이동 */}
-      <Route path="/" element={<Navigate to="/profile/1" />} />
-
-    
-    </Routes>
+    <>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path="/profile/:userId" element={<ProfileRouteWrapper />} />
+        <Route path='/upload' element={<PhotoUpload />} />
+      </Routes>
+    </>
   );
 }
 
