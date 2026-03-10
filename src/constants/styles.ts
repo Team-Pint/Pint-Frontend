@@ -60,3 +60,20 @@ export const PROFILE_STYLES = {
     gridImage: "w-full h-full object-cover group-hover:scale-105 transition duration-[1.2s] ease-out grayscale-[0.2] group-hover:grayscale-0",
     gridOverlay: "absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500",
 }
+
+export const MODAL_STYLES = {
+  overlay: "fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4",
+
+  // ✅ 수정 후: 직사각형 비율 + 각진 모서리 반영
+  content: "bg-white rounded-xl w-full max-w-[420px] p-10 flex flex-col items-center relative shadow-2xl transition-all duration-300", 
+  // 기존: max-w-[480px] (더 넓었음), rounded-[40px] (매우 둥글었음)
+  // 변경: max-w-[420px] (더 좁고 길게), rounded-3xl (각진 느낌)
+
+  closeBtn: "absolute top-8 right-8 text-gray-400 hover:text-black transition-colors",
+  profileImgWrapper: "relative mb-10",
+  profileImg: "w-32 h-32 rounded-full object-cover border-4 border-white", 
+  cameraBtn: "absolute bottom-1 right-1 bg-black text-white p-2 rounded-full cursor-pointer hover:scale-110 transition-all shadow-lg border-2 border-white",
+  input: "w-full border border-gray-200 rounded-xl px-5 py-4 text-sm focus:outline-none focus:border-black transition-all font-medium placeholder:text-gray-300",
+  textarea: "w-full border border-gray-200 rounded-xl px-5 py-4 text-sm h-32 resize-none focus:outline-none focus:border-black transition-all font-medium placeholder:text-gray-300",
+  saveBtn: "bg-black text-white px-12 py-3.5 rounded-full font-bold text-[13px] hover:bg-gray-800 transition-all uppercase tracking-widest mt-8",
+};
