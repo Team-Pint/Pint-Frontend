@@ -2,6 +2,7 @@ import Home from './pages/Home/Home';
 import { Routes, Route, useParams } from 'react-router-dom';
 import Profile from './pages/Profile/Profile'
 import Header from './components/Header/Header';
+import Login from './pages/Login/Login';
 
 // URL 파라미터 :userId를 추출하여 ProfilePage에 전달하는 컴포넌트
 const ProfileRouteWrapper = () => {
@@ -18,7 +19,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path="/profile/:userId" element={<ProfileRouteWrapper />} />
-        
+        <Route path="/login" element={<Login />} />
       </Routes>
     </>
   );

@@ -10,7 +10,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   const [selectedPost, setSelectedPost] = useState<PostDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 헤더 관련 스타일 변수들은 여기서 제거했습니다.
+  // 헤더 관련 스타일 변수들은 여기서 제거
   const {
     container, wrapper, loadingState,
     profileSection, nameWrapper, nameItem, infoWrapper, editBtn, 
@@ -42,8 +42,6 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   return (
     <div className={cn(container, !!selectedPost && "overflow-hidden h-screen")}>
       <div className={wrapper}>
-        
-        {/* ❌ <header> 섹션 제거됨 (App.tsx의 공통 Header 사용) */}
 
         <main className="mt-4"> {/* 헤더와의 적절한 간격을 위해 마진 추가 */}
           <section className={profileSection}>
