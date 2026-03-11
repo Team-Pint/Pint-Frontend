@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Pencil } from 'lucide-react'; // Search, Upload는 헤더로 갔으니 삭제
+import { Pencil } from 'lucide-react';
 import PostDetailModal from './PostDetailModal';
+import ProfileEditModal from './ProfileEditModal'; // 💡 모달 컴포넌트 임포트
 import type { ProfileResponse, PostDetail } from '../../types/ProfileData';
 import { cn } from '../../lib/utils';
 import { PROFILE_STYLES as styles } from '../../constants/styles';
@@ -8,9 +9,9 @@ import { PROFILE_STYLES as styles } from '../../constants/styles';
 const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   const [profileData, setProfileData] = useState<ProfileResponse | null>(null);
   const [selectedPost, setSelectedPost] = useState<PostDetail | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 💡 모달 열림 상태 추가
   const [loading, setLoading] = useState(true);
 
-  // 헤더 관련 스타일 변수들은 여기서 제거
   const {
     container, wrapper, loadingState,
     profileSection, nameWrapper, nameItem, infoWrapper, editBtn, 
@@ -19,6 +20,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   } = styles;
 
   useEffect(() => {
+    // 초기 데이터 로드 (실제 환경에서는 API 호출)
     const mockData: ProfileResponse = {
       username: "최 소영",
       description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to ",
@@ -37,16 +39,20 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
 
   if (loading || !profileData) return <div className={loadingState}>Loading...</div>;
 
+  // 💡 저장 버튼 클릭 시 실행될 핸들러 (나중에 백엔드 연동 포인트)
+  const handleSaveProfile = (updatedData: Partial<ProfileResponse>) => {
+    setProfileData(prev => prev ? { ...prev, ...updatedData } : null);
+    setIsEditModalOpen(false);
+  };
+
   const { username, description, city, email, isMe, profileImage, postList } = profileData;
 
   return (
-    <div className={cn(container, !!selectedPost && "overflow-hidden h-screen")}>
+    <div className={cn(container, (!!selectedPost || isEditModalOpen) && "overflow-hidden h-screen")}>
       <div className={wrapper}>
-
-        <main className="mt-4"> {/* 헤더와의 적절한 간격을 위해 마진 추가 */}
+        <main className="mt-4">
           <section className={profileSection}>
             <div className={nameWrapper}>
-              {/* 이름 사이 공백이 있으면 줄바꿈 처리 */}
               {username.split(' ').map((name, i) => (
                 <span key={i} className={nameItem}>{name}</span>
               ))}
@@ -54,7 +60,10 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
             
             <div className={infoWrapper}>
               {isMe && (
-                <button className={editBtn}>
+                <button 
+                  className={editBtn} 
+                  onClick={() => setIsEditModalOpen(true)} // 💡 클릭 시 모달 오픈
+                >
                   <Pencil size={10} strokeWidth={2.5} /> Edit
                 </button>
               )}
@@ -87,9 +96,18 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
         </main>
       </div>
 
+      {/* 💡 게시물 상세 모달 */}
       {selectedPost && (
         <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />
       )}
+
+      {/* 💡 프로필 편집 모달 */}
+      <ProfileEditModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        data={profileData}
+        onSave={handleSaveProfile} // 데이터 연동을 위한 함수 전달
+      />
     </div>
   );
 };
