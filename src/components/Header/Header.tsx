@@ -39,8 +39,8 @@ const Header: React.FC<HeaderProps> = ({ myId = 1 }) => {
           <h1 className={logo} onClick={handleLogoClick}>Pint.</h1>
 
           <div className={searchWrapper}>
-            <Search size={14} className="text-gray-400" />
             <input type="text" placeholder="Search" className={searchInput} />
+            <Search size={14} />
           </div>
         </div>
 

@@ -51,7 +51,7 @@ const Login: React.FC = () => {
             <div className="relative">
               <input type="email" className={`${input} w-full`} placeholder="example@pint.com" />
               {/* 시안 기반 중복 확인 버튼 */}
-              <button className={`absolute right-0 bottom-2 text-[10px] border border-white/40 px-3 py-1 rounded-full transition-all duration-300 ${isLogin ? 'opacity-0 pointer-events-none' : 'opacity-100 hover:bg-white hover:text-black'}`}>
+              <button className={`absolute right-0 bottom-2 text-[10px] bg-white text-black px-4 py-1 rounded-full transition-all duration-300 ${isLogin ? 'opacity-0 pointer-events-none' : 'opacity-100 hover:bg-white/60'}`}>
                 Check Availability
               </button>
             </div>
