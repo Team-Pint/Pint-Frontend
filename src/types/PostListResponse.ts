@@ -3,6 +3,9 @@ export interface PostList {
     imgUrl: string;
     width: number;
     height: number;
+    location: string;
+    camera: string;
+    isLiked: boolean
 }
 
 export interface PostListResponse {

@@ -1,10 +1,10 @@
 import type React from "react";
-import type { PostUpload } from "../../types/PostUpload";
+import type { PostUploadRequest } from "../../types/PostUpload";
 import { useRef } from "react";
 
 interface Props {
-    data: PostUpload;
-    setData: React.Dispatch<React.SetStateAction<PostUpload>>;
+    data: PostUploadRequest;
+    setData: React.Dispatch<React.SetStateAction<PostUploadRequest>>;
     isLoading: boolean;
     handleUpload: () => void;
 }
@@ -22,10 +22,10 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
             filterInputRef.current.value = "";
         }
 
-        setData(prev => ({ ...prev, filterFile: null }));
+        setData(prev => ({ ...prev, filter: null }));
     }
 
-    const isSubmitDisabled = !data.location || !data.description || !data.filterFile || isLoading;
+    const isSubmitDisabled = !data.location || !data.description || !data.filter || isLoading;
 
     return (
         <div className="flex flex-1 px-10 items-center justify-center">
@@ -46,7 +46,7 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
                         placeholder="사진을 찍은 장소를 입력하세요"
                         value={data.location}
                         onChange={(e) => setData({ ...data, location: e.target.value })}
-                        className="mt-2 rounded-lg w-full text-sm border border-black p-4 text-xs outline-none"
+                        className="mt-2 rounded-lg w-full border border-black p-4 text-xs outline-none"
                     />
                 </div>
 
@@ -55,15 +55,15 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
                     <label className="text-sm">프리셋 파일 (.xmp, .json)</label>
                     <div className="relative">
                         <label
-                            htmlFor={data.filterFile ? undefined : "filter-upload"}
-                            onClick={(e) => data.filterFile && e.preventDefault()}
-                            className={`mt-2 flex items-center w-full px-4 py-3 rounded-lg border border-black ${data.filterFile ? "cursor-default" : "cursor-pointer"}`}
+                            htmlFor={data.filter ? undefined : "filter-upload"}
+                            onClick={(e) => data.filter && e.preventDefault()}
+                            className={`mt-2 flex items-center w-full px-4 py-3 rounded-lg border border-black ${data.filter ? "cursor-default" : "cursor-pointer"}`}
                         >
                             <img src="/images/ic_upload.svg" alt="파일 업로드" className="w-5 h-5 mr-3 flex-shrink-0" />
-                            <span className={`text-xs flex-grow truncate ${data.filterFile ? 'text-black' : 'text-gray-400'}`}>
-                                {data.filterFile ? data.filterFile.name : "사용한 프리셋 파일을 업로드 하세요"}
+                            <span className={`text-xs flex-grow truncate ${data.filter ? 'text-black' : 'text-gray-400'}`}>
+                                {data.filter ? data.filter.name : "사용한 프리셋 파일을 업로드 하세요"}
                             </span>
-                            {data.filterFile && (
+                            {data.filter && (
                                 <button
                                     type="button"
                                     className="p-1 cursor-pointer"
@@ -76,7 +76,7 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
 
                         <input
                             type="file"
-                            onChange={(e) => setData(prev => ({ ...prev, filterFile: e.target.files?.[0] || null }))}
+                            onChange={(e) => setData(prev => ({ ...prev, filter: e.target.files?.[0] || null }))}
                             className="hidden"
                             id="filter-upload"
                             accept=".xmp, .json"

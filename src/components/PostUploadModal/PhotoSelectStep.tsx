@@ -25,7 +25,7 @@ const PhotoSelectStep: React.FC<Props> = ({ previewImage, handleImageChange, onR
                 </div>
             ) : (
                 // 사진 선택 후
-                <div className="flex flex-col items-center w-full max-w-lg duration-300">
+                <div className="flex flex-col items-center w-full max-w-lg">
                     {/* 미리보기 사진 */}
                     <div className="mb-3 overflow-hidden">
                         <img src={previewImage} alt="미리보기" className="w-full object-contain max-h-[400px]" />

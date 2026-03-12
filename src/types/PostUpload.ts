@@ -1,7 +1,13 @@
-export interface PostUpload {
-    imageFile: File | null;
+export interface PostUploadRequest {
+    image: File | null;
     previewImage: string;
     location: string;
-    filterFile: File | null;
+    filter: File | null;
     description: string;
+}
+
+export interface PostUploadResponse {
+    code: number;
+    message: string;
+    data: string;
 }
