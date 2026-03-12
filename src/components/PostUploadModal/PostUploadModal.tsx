@@ -1,8 +1,9 @@
 import React, { useEffect, useState, type ChangeEvent } from "react";
-import type { PostUpload } from "../../types/PostUpload";
+import type { PostUploadRequest } from "../../types/PostUpload";
 import { useNavigate } from "react-router-dom";
 import PhotoSelectStep from "./PhotoSelectStep";
 import InfoInputStep from "./InfoInputStep";
+import { postUploadApi } from "../../api/postUploadApi";
 
 interface Props {
     isOpen: boolean;
@@ -13,11 +14,11 @@ const PostUploadModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
     const navigate = useNavigate();
     const [step, setStep] = useState<1 | 2>(1); // 단계별 모달
-    const [data, setData] = useState<PostUpload>({ // 포스트 데이터
-        imageFile: null,
+    const [data, setData] = useState<PostUploadRequest>({ // 포스트 데이터
+        image: null,
         previewImage: '',
         location: '',
-        filterFile: null,
+        filter: null,
         description: ''
     });
     const [isLoading, setIsLoading] = useState(false); // 업로드 시 로딩 상태
@@ -37,18 +38,27 @@ const PostUploadModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
         if (file) {
             if (data.previewImage) URL.revokeObjectURL(data.previewImage); // 기존 사진 임시 URL 삭제
-            setData({ ...data, imageFile: file, previewImage: URL.createObjectURL(file) }); // 미리보기용 임시 URL
+            setData({ ...data, image: file, previewImage: URL.createObjectURL(file) }); // 미리보기용 임시 URL
         }
     };
 
     // 포스트 업로드
-    const handleUpload = () => {
+    const handleUpload = async () => {
         setIsLoading(true);
 
-        // API 연동 코드 추가'
+        try {
+            const result = await postUploadApi(data); // POST API 통신
 
-        navigate('/profile/1');
-        onClose();
+            if (result.code === 200 || result.code === 201) {
+                alert("게시글 등록 완료!");
+                navigate('/profile/1');
+                onClose();
+            }
+        } catch (error) {
+            console.error("업로드 실패", error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -68,7 +78,7 @@ const PostUploadModal: React.FC<Props> = ({ isOpen, onClose }) => {
                         <PhotoSelectStep
                             previewImage={data.previewImage}
                             handleImageChange={handleImageChange}
-                            onReset={() => setData({ ...data, previewImage: '', imageFile: null })}
+                            onReset={() => setData({ ...data, previewImage: '', image: null })}
                             onNext={() => setStep(2)}
                         />
                     )}
