@@ -47,10 +47,13 @@ const PostUploadModal: React.FC<Props> = ({ isOpen, onClose }) => {
         setIsLoading(true);
 
         try {
-            await postUploadApi(data); // POST API 통신
+            const result = await postUploadApi(data); // POST API 통신
 
-            navigate('/profile/1');
-            onClose();
+            if (result.code === 200 || result.code === 201) {
+                alert("게시글 등록 완료!");
+                navigate('/profile/1');
+                onClose();
+            }
         } catch (error) {
             console.error("업로드 실패", error);
         } finally {
