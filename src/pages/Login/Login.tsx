@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AUTH_STYLES } from '../../constants/authStyles';
+import { signIn, signUp, checkEmail } from '../../api/auth'; // API 연동 함수
 
+// 스크롤 이미지 컬럼 컴포넌트
 const ScrollingColumn = ({ images, speed, direction, className }: { images: any[], speed: string, direction: 'up' | 'down', className: string }) => (
   <div className={`${className} h-full overflow-hidden relative`}>
     <div 
@@ -24,10 +26,64 @@ const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
 
+  // 💡 1. 입력값 상태 관리 (방법 1)
+  const [formData, setFormData] = useState({
+    email: '',
+    pw: '',
+    verifyPw: '',
+    username: ''
+  });
+
   const { 
     container, leftSection, logo, formWrapper, inputGroup, 
     label, input, button, toggleText, rightSection, column 
   } = AUTH_STYLES;
+
+  // 입력값 변경 핸들러
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // 💡 2. 이메일 중복 확인 연동
+  const handleCheckEmail = async () => {
+    if (!formData.email) return alert("이메일을 입력해주세요.");
+    try {
+      const res = await checkEmail(formData.email);
+      if (res.code === 200) alert("사용 가능한 이메일입니다.");
+    } catch (err: any) {
+      alert(err.response?.data?.message || "이미 사용 중인 이메일입니다.");
+    }
+  };
+
+  // 💡 3. 로그인 / 회원가입 제출 연동
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (isLogin) {
+        // 로그인 시도
+        const res = await signIn({ email: formData.email, password: formData.pw });
+        if (res.code === 200) {
+          alert("로그인 성공!");
+          navigate('/');
+        }
+      } else {
+        // 회원가입 시도
+        if (formData.pw !== formData.verifyPw) return alert("비밀번호가 일치하지 않습니다.");
+        const res = await signUp({ 
+          email: formData.email, 
+          password: formData.pw, 
+          userName: formData.username 
+        });
+        if (res.code === 200) {
+          alert("회원가입이 완료되었습니다! 로그인을 진행해주세요.");
+          setIsLogin(true); // 로그인 모드로 전환
+        }
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || "오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
 
   const mockImages = [
     { h: "h-[300px]", url: "https://picsum.photos/seed/1/500/800" },
@@ -42,16 +98,24 @@ const Login: React.FC = () => {
       <div className={leftSection}>
         <h1 className={logo}>Pint.</h1>
         
-        {/* 💡 통일성: 모든 자식 요소 간격을 gap-4(16px)로 통일 */}
-        <div className={`${formWrapper} flex flex-col gap-4`}>
-          
+        <form onSubmit={handleSubmit} className={`${formWrapper} flex flex-col gap-4`}>
           {/* Email Address */}
           <div className={inputGroup}>
             <label className={label}>EMAIL ADDRESS</label>
             <div className="relative">
-              <input type="email" className={`${input} w-full`} placeholder="example@pint.com" />
-              {/* 시안 기반 중복 확인 버튼 */}
-              <button className={`absolute right-0 bottom-2 text-[10px] bg-white text-black px-4 py-1 rounded-full transition-all duration-300 ${isLogin ? 'opacity-0 pointer-events-none' : 'opacity-100 hover:bg-white/60'}`}>
+              <input 
+                name="email"
+                type="email" 
+                className={`${input} w-full`} 
+                placeholder="example@pint.com" 
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              <button 
+                type="button"
+                onClick={handleCheckEmail}
+                className={`absolute right-0 bottom-2 text-[10px] bg-white text-black px-4 py-1 rounded-full border border-black transition-all duration-300 ${isLogin ? 'opacity-0 pointer-events-none' : 'opacity-100 hover:bg-black hover:text-white'}`}>
                 Check Availability
               </button>
             </div>
@@ -60,24 +124,46 @@ const Login: React.FC = () => {
           {/* Password */}
           <div className={inputGroup}>
             <label className={label}>PASSWORD</label>
-            <input type="password" className={input} placeholder="••••••••" />
+            <input 
+              name="pw"
+              type="password" 
+              className={input} 
+              placeholder="••••••••" 
+              value={formData.pw}
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          {/* 💡 회원가입 확장 섹션: gap-4를 동일하게 적용하여 Password와 연결성을 강화 */}
-          <div className={`flex flex-col gap-4 transition-all duration-500 ease-in-out overflow-hidden ${isLogin ? 'max-h-0 opacity-0' : 'max-h-[200px] opacity-100'}`}>
+          {/* 회원가입 전용 필드 */}
+          <div className={`flex flex-col gap-4 transition-all duration-500 ease-in-out overflow-hidden ${isLogin ? 'max-h-0 opacity-0' : 'max-h-[250px] opacity-100'}`}>
             <div className={inputGroup}>
               <label className={label}>VERIFY PASSWORD</label>
-              <input type="password" className={input} placeholder="••••••••" />
+              <input 
+                name="verifyPw"
+                type="password" 
+                className={input} 
+                placeholder="••••••••" 
+                value={formData.verifyPw}
+                onChange={handleChange}
+              />
             </div>
             <div className={inputGroup}>
               <label className={label}>USERNAME</label>
-              <input type="text" className={input} placeholder="Your unique name" />
+              <input 
+                name="username"
+                type="text" 
+                className={input} 
+                placeholder="Your unique name" 
+                value={formData.username}
+                onChange={handleChange}
+              />
             </div>
           </div>
 
           {/* 버튼 섹션 */}
           <div className="flex flex-col gap-4 mt-6">
-            <button className={button} onClick={() => navigate('/')}>
+            <button type="submit" className={button}>
               {isLogin ? "SIGN IN" : "SIGN UP"}
             </button>
 
@@ -85,10 +171,10 @@ const Login: React.FC = () => {
               {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Log In"}
             </p>
           </div>
-        </div>
+        </form>
       </div>
 
-      {/* 오른쪽 사진 스크롤 섹션 */}
+      {/* 오른쪽 사진 스크롤 섹션: 💡 column 변수를 활용하여 경고 해결 */}
       <div className={`${rightSection} gap-6 px-6`}>
         <ScrollingColumn images={mockImages} speed="50s" direction="up" className={column} />
         <ScrollingColumn images={[...mockImages].reverse()} speed="65s" direction="down" className={column} />

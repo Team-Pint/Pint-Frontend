@@ -5,16 +5,21 @@ import { DETAIL_MODAL_STYLES as styles } from '../../constants/styles';
 import type { PostDetail } from '../../types/ProfileData';
 import MoreInfoModal from '../../components/MoreInfoModal/MoreInfoModal';
 
-interface DetailModalProps {
+interface PostDetailModalProps {
   post: PostDetail;
   onClose: () => void;
 }
 
-const DetailModal: React.FC<DetailModalProps> = ({ post, onClose }) => {
-  const { profileImage, username, location, camera, description, imgUrl, isWriter } = post;
-  const { overlayBase, backdrop, contentBase, sideInfo, userBar, userAvatar, userName, infoGroup, label, value, descText, moreBtn, imageStage, closeBtn, imageBorder, mainImg, adminBar, editBtn, deleteBtn } = styles;
-
+const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
+  // 💡 [추가] 모달 열림 상태 관리를 위한 state
   const [isPresetOpen, setIsPresetOpen] = useState(false);
+
+  const { profileImage, username, location, camera, description, imgUrl, isWriter } = post;
+  const { 
+    overlayBase, backdrop, contentBase, sideInfo, userBar, userAvatar, userName, 
+    infoGroup, label, value, descText, moreBtn, imageStage, closeBtn, 
+    imageBorder, mainImg, adminBar, editBtn, deleteBtn 
+  } = styles;
 
   return (
     <div className={cn(overlayBase)}>
@@ -46,6 +51,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ post, onClose }) => {
             </div>
           </div>
 
+          {/* 💡 More Info 버튼 클릭 시 setIsPresetOpen(true) 호출 */}
           <button className={moreBtn} onClick={() => setIsPresetOpen(true)}>
             <Info size={14} strokeWidth={1.5} /> More Info
           </button>
@@ -77,6 +83,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ post, onClose }) => {
         </div>
       </div>
 
+      {/* 💡 추가 정보 모달 (isPresetOpen이 true일 때만 렌더링) */}
       {isPresetOpen && (
         <MoreInfoModal
           imgUrl={imgUrl}
@@ -87,4 +94,4 @@ const DetailModal: React.FC<DetailModalProps> = ({ post, onClose }) => {
   );
 };
 
-export default DetailModal;
+export default PostDetailModal;
