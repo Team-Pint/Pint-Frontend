@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Pencil } from 'lucide-react';
 import PostDetailModal from './PostDetailModal';
-import ProfileEditModal from './ProfileEditModal'; // 💡 모달 컴포넌트 임포트
+import ProfileEditModal from './ProfileEditModal'; 
 import type { ProfileResponse, PostDetail } from '../../types/ProfileData';
 import { cn } from '../../lib/utils';
 import { PROFILE_STYLES as styles } from '../../constants/styles';
@@ -9,7 +9,7 @@ import { PROFILE_STYLES as styles } from '../../constants/styles';
 const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   const [profileData, setProfileData] = useState<ProfileResponse | null>(null);
   const [selectedPost, setSelectedPost] = useState<PostDetail | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 💡 모달 열림 상태 추가
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); 
   const [loading, setLoading] = useState(true);
 
   const {
@@ -19,11 +19,12 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
     gridContainer, gridItem, gridImage, gridOverlay
   } = styles;
 
+  // 1. 프로필 정보 조회 (초기 로드)
   useEffect(() => {
-    // 초기 데이터 로드 (실제 환경에서는 API 호출)
+    // 실제 환경에서는 여기서 API 호출을 수행합니다.
     const mockData: ProfileResponse = {
       username: "최 소영",
-      description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to ",
+      description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
       city: "SEOUL, KOREA",
       email: "soyoung@example.com",
       isMe: true,
@@ -39,12 +40,13 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
 
   if (loading || !profileData) return <div className={loadingState}>Loading...</div>;
 
-  // 💡 저장 버튼 클릭 시 실행될 핸들러 (나중에 백엔드 연동 포인트)
+  // 저장 버튼 클릭 시 실행될 핸들러
   const handleSaveProfile = (updatedData: Partial<ProfileResponse>) => {
     setProfileData(prev => prev ? { ...prev, ...updatedData } : null);
     setIsEditModalOpen(false);
   };
 
+  // 구조 분해 할당으로 변수 추출
   const { username, description, city, email, isMe, profileImage, postList } = profileData;
 
   return (
@@ -62,11 +64,12 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
               {isMe && (
                 <button 
                   className={editBtn} 
-                  onClick={() => setIsEditModalOpen(true)} // 💡 클릭 시 모달 오픈
+                  onClick={() => setIsEditModalOpen(true)}
                 >
                   <Pencil size={10} strokeWidth={2.5} /> Edit
                 </button>
               )}
+              {/* 💡 Profile. 문구를 제거하여 에러 해결 */}
               <p className={descriptionText}>{description}</p>
               <div className={locationText}>FROM: {city}</div>
               <div className={emailText}>{email}</div>
@@ -82,7 +85,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
                   ...post,
                   location: city,
                   camera: "LEICA M11",
-                  description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release",
+                  description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. It has survived not only five centuries, but also the leap into electronic typesetting.",
                   username,
                   profileImage,
                   isWriter: isMe
@@ -96,17 +99,17 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
         </main>
       </div>
 
-      {/* 💡 게시물 상세 모달 */}
+      {/* 게시물 상세 모달 */}
       {selectedPost && (
         <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />
       )}
 
-      {/* 💡 프로필 편집 모달 */}
+      {/* 프로필 편집 모달 */}
       <ProfileEditModal 
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         data={profileData}
-        onSave={handleSaveProfile} // 데이터 연동을 위한 함수 전달
+        onSave={handleSaveProfile}
       />
     </div>
   );

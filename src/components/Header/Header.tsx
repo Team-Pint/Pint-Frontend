@@ -3,6 +3,8 @@ import { Search, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { HEADER_STYLES } from '../../constants/headerStyles';
 import PostUploadModal from '../PostUploadModal/PostUploadModal';
+// 💡 HeaderNav를 가져옵니다!
+import HeaderNav from './HeaderNav';
 
 interface HeaderProps {
   myId?: number;
@@ -10,11 +12,8 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ myId = 1 }) => {
   const navigate = useNavigate();
-
-  // 1. 상태 관리 구조 분해 할당
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 2. 스타일 상수 완벽 구조 분해 할당
   const {
     headerRoot,
     leftSection,
@@ -23,12 +22,9 @@ const Header: React.FC<HeaderProps> = ({ myId = 1 }) => {
     searchInput,
     rightSection,
     uploadBtn,
-    avatar,
   } = HEADER_STYLES;
 
-  // 3. 핸들러 함수 분리 (JSX를 더 깔끔하게 유지)
   const handleLogoClick = () => navigate('/');
-  const handleProfileClick = () => navigate(`/profile/${myId}`);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -49,12 +45,8 @@ const Header: React.FC<HeaderProps> = ({ myId = 1 }) => {
             <Upload size={12} strokeWidth={3} /> Upload
           </button>
 
-          <img
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500"
-            className={avatar}
-            alt="profile"
-            onClick={handleProfileClick}
-          />
+          {/* 💡 기존 <img> 태그 대신 HeaderNav를 넣습니다! */}
+          <HeaderNav myId={myId} />
         </div>
       </header>
 
