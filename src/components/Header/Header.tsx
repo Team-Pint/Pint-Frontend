@@ -3,7 +3,6 @@ import { Search, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { HEADER_STYLES } from '../../styles/headerStyles';
 import PostUploadModal from '../PostUploadModal/PostUploadModal';
-// 💡 HeaderNav를 가져옵니다!
 import HeaderNav from './HeaderNav';
 
 interface HeaderProps {
@@ -24,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ myId = 1 }) => {
     uploadBtn,
   } = HEADER_STYLES;
 
-  const handleLogoClick = () => navigate('/');
+  const handleLogoClick = () => navigate('/home');
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -45,7 +44,6 @@ const Header: React.FC<HeaderProps> = ({ myId = 1 }) => {
             <Upload size={12} strokeWidth={3} /> Upload
           </button>
 
-          {/* 💡 기존 <img> 태그 대신 HeaderNav를 넣습니다! */}
           <HeaderNav myId={myId} />
         </div>
       </header>
