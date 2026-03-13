@@ -6,7 +6,7 @@ import { User, LogOut } from 'lucide-react';
 import { HEADER_STYLES } from '../../styles/headerStyles';
 import { useUserStore } from '../../store/useUserStore';
 import { cn } from '../../lib/utils';
-import { Header_NAV_STYLES } from '../../styles/HeaderNavStyles';
+import { Header_NAV_STYLES } from '../../styles/headerNavStyles';
 
 const HeaderNav: React.FC<{ myId: number }> = ({ myId }) => {
   const [isOpen, setIsOpen] = useState(false);
