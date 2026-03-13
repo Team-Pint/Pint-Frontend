@@ -1,5 +1,5 @@
 import type { PostUploadRequest, PostUploadResponse } from "../types/PostUpload";
-import api from "./apiClient";
+import api from './apiClient';
 
 export const postUploadApi = async (data: PostUploadRequest): Promise<PostUploadResponse> => {
     const formData = new FormData();
@@ -11,11 +11,7 @@ export const postUploadApi = async (data: PostUploadRequest): Promise<PostUpload
     }
     if (data.image) formData.append("image", data.image);
 
-    const response = await api.post<PostUploadResponse>("/posts", formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
+    const response = await api.post<PostUploadResponse>("/posts", formData);
 
     return response.data;
 }

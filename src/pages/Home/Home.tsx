@@ -12,6 +12,7 @@ const Home = () => {
         const fetchPosts = async () => {
             try {
                 const data = await allPostApi();
+                console.log("API 응답 데이터: ", data);
                 setPosts(data);
             } catch (error) {
                 console.error("데이터 로드 실패", error);
@@ -30,7 +31,10 @@ const Home = () => {
         height: post.height,
         location: post.location,
         camera: post.camera,
-        // isLiked: post.isLiked
+        // isLiked: post.isLiked,
+        // likeCount: post.likeCount
+        // username: post.username,
+        // profileUrl: post.profileUrl
     })), [posts]);
 
     if (loading) return "로딩 중...";

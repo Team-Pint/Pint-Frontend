@@ -11,5 +11,7 @@ export interface PostList {
 export interface PostListResponse {
     code: number;
     message: string;
-    data: PostList[];
+    data: {
+        postList: PostList[];
+    }
 }
