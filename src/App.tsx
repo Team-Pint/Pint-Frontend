@@ -1,5 +1,5 @@
 import Home from './pages/Home/Home';
-import { Routes, Route, useParams, useLocation } from 'react-router-dom'; // 💡 useLocation 추가
+import { Routes, Route, useParams, useLocation, Navigate } from 'react-router-dom'; // 💡 useLocation 추가
 import Profile from './pages/Profile/Profile'
 import Header from './components/Header/Header';
 import Login from './pages/Login/Login';
@@ -23,9 +23,10 @@ function App() {
       {!isLoginPage && <Header myId={1} />}
       
       <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path="/profile/:userId" element={<ProfileRouteWrapper />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
+        <Route path='/home' element={<Home />} />
+        <Route path="/profile/:userId" element={<ProfileRouteWrapper />} />
       </Routes>
     </>
   );

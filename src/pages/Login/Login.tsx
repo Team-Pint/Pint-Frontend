@@ -86,7 +86,7 @@ const Login: React.FC = () => {
           // 이후 요청을 위해 저장 (메모리나 보안 스토리지 권장)
           sessionStorage.setItem('csrfToken', csrfToken);
           alert("로그인 성공!");
-          navigate('/');
+          navigate('/home');
         } else {
           alert("로그인 실패");
         }
