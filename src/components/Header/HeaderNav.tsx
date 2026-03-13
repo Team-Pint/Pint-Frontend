@@ -2,13 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, LogOut } from 'lucide-react';
 import { HEADER_STYLES } from '../../styles/headerStyles';
-import { useUserStore } from '../../store/useUserStore';
 import { cn } from '../../lib/utils';
 import { Header_NAV_STYLES } from '../../styles/headerNavStyles';
 import { signOut } from '../../api/authApi';
+import { headerApi } from '../../api/headerApi';
 
 const HeaderNav: React.FC<{ myId: number }> = ({ myId }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -21,7 +22,20 @@ const HeaderNav: React.FC<{ myId: number }> = ({ myId }) => {
 
   // 2. 공통 아바타 스타일 및 스토어 데이터 추출
   const { avatar: sharedAvatarStyle } = HEADER_STYLES;
-  const { profileImage } = useUserStore((state) => state.myProfile);
+
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      try {
+        const response = await headerApi();
+        if (response.code === 200 || response.message === "Success") {
+          setProfileImage(response.data.profileImage);
+        }
+      } catch (error) {
+        console.error("프로필 로드 실패: ", error);
+      }
+    }
+    fetchProfileImage();
+  }, [])
 
   // 3. 드롭다운 외부 클릭 시 닫기 로직
   useEffect(() => {
@@ -61,11 +75,11 @@ const HeaderNav: React.FC<{ myId: number }> = ({ myId }) => {
         className={cn(sharedAvatarStyle, avatarBtn)}
         onClick={() => setIsOpen(!isOpen)}
       >
-        {profileImage ? (
-          <img src={profileImage} className={avatarImg} alt="profile" />
-        ) : (
+        {profileImage && profileImage.trim() !== "" ? (
+          <img src={profileImage} className={avatarImg} alt="프로필 이미지"/>
+        ) :
           <User size={18} className={avatarPlaceholder} />
-        )}
+        }
       </div>
 
       {/* 드롭다운 메뉴 영역 */}
@@ -74,14 +88,14 @@ const HeaderNav: React.FC<{ myId: number }> = ({ myId }) => {
           <ul className={menuList}>
             <li className={menuItem} onClick={handleProfileClick}>
               <User size={18} className={iconDefault} />
-              Your Profile
+              My Profile
             </li>
 
             <div className={menuDivider} />
 
             <li className={cn(menuItem, logoutText)} onClick={handleLogout}>
               <LogOut size={18} className={iconDefault} />
-              Logout
+              Log out
             </li>
           </ul>
         </div>
