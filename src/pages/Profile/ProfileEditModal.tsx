@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Camera } from 'lucide-react';
-import { MODAL_STYLES } from '../../constants/styles';
+import { MODAL_STYLES } from '../../styles/profileStyles';
 
 interface ProfileEditModalProps {
   isOpen: boolean;

@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AUTH_STYLES } from '../../constants/authStyles';
-import { signIn, signUp, checkEmail } from '../../api/auth'; // API 연동 함수
+import { AUTH_STYLES } from '../../styles/authStyles';
+import { signIn, signUp, checkEmail } from '../../api/authApi';
 
 // 스크롤 이미지 컬럼 컴포넌트
 const ScrollingColumn = ({ images, speed, direction, className }: { images: any[], speed: string, direction: 'up' | 'down', className: string }) => (
   <div className={`${className} h-full overflow-hidden relative`}>
-    <div 
-      className={`flex flex-col gap-6 w-full ${direction === 'up' ? 'animate-scroll-up' : 'animate-scroll-down'}`} 
+    <div
+      className={`flex flex-col gap-6 w-full ${direction === 'up' ? 'animate-scroll-up' : 'animate-scroll-down'}`}
       style={{ animationDuration: speed }}
     >
       {[...images, ...images].map((img, idx) => (
-        <img 
-          key={idx} 
-          src={img.url} 
-          className={`${AUTH_STYLES.image} ${img.h} w-full flex-shrink-0 object-cover`} 
-          alt="" 
+        <img
+          key={idx}
+          src={img.url}
+          className={`${AUTH_STYLES.image} ${img.h} w-full flex-shrink-0 object-cover`}
+          alt=""
         />
       ))}
     </div>
@@ -24,9 +24,10 @@ const ScrollingColumn = ({ images, speed, direction, className }: { images: any[
 
 const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isEmailChecked, setIsEmailChecked] = useState(false);
   const navigate = useNavigate();
 
-  // 💡 1. 입력값 상태 관리 (방법 1)
+  // 입력값 상태 관리
   const [formData, setFormData] = useState({
     email: '',
     pw: '',
@@ -34,50 +35,72 @@ const Login: React.FC = () => {
     username: ''
   });
 
-  const { 
-    container, leftSection, logo, formWrapper, inputGroup, 
-    label, input, button, toggleText, rightSection, column 
+  const {
+    container, leftSection, logo, formWrapper, inputGroup,
+    label, input, button, toggleText, rightSection, column
   } = AUTH_STYLES;
+
+  // 입력값 유효성 검사
+  const isFormValid = useMemo(() => {
+    const { email, pw, verifyPw, username } = formData;
+    if (isLogin) return !!(email && pw);
+    return !!(email && pw && verifyPw && username && isEmailChecked);
+  }, [formData, isLogin, isEmailChecked])
 
   // 입력값 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+
+    if (name === 'email') {
+      setIsEmailChecked(false);
+    }
   };
 
-  // 💡 2. 이메일 중복 확인 연동
+  // 이메일 중복 확인
   const handleCheckEmail = async () => {
     if (!formData.email) return alert("이메일을 입력해주세요.");
     try {
       const res = await checkEmail(formData.email);
-      if (res.code === 200) alert("사용 가능한 이메일입니다.");
+      const isAvaliable = res.code === 200 && res.data.isAvailable;
+
+      alert(isAvaliable ? "사용 가능한 이메일입니다." : "이미 사용 중인 이메일입니다.");
+      setIsEmailChecked(isAvaliable);
     } catch (err: any) {
-      alert(err.response?.data?.message || "이미 사용 중인 이메일입니다.");
+      alert(err.response?.data?.message || "오류가 발생했습니다.");
+      setIsEmailChecked(false);
     }
   };
 
-  // 💡 3. 로그인 / 회원가입 제출 연동
+  // 로그인 / 회원가입 제출 연동
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (isLogin) {
         // 로그인 시도
         const res = await signIn({ email: formData.email, password: formData.pw });
-        if (res.code === 200) {
+
+        if (res.code === 200 || res.message === "Success") {
           alert("로그인 성공!");
           navigate('/');
+        } else {
+          alert("로그인 실패");
         }
       } else {
         // 회원가입 시도
         if (formData.pw !== formData.verifyPw) return alert("비밀번호가 일치하지 않습니다.");
-        const res = await signUp({ 
-          email: formData.email, 
-          password: formData.pw, 
-          userName: formData.username 
+
+        const res = await signUp({
+          email: formData.email,
+          password: formData.pw,
+          username: formData.username
         });
-        if (res.code === 200) {
+
+        if (res.code === 200 || res.message === "Success") {
           alert("회원가입이 완료되었습니다! 로그인을 진행해주세요.");
           setIsLogin(true); // 로그인 모드로 전환
+        } else {
+          alert("회원가입 실패");
         }
       }
     } catch (err: any) {
@@ -97,26 +120,28 @@ const Login: React.FC = () => {
     <div className={container}>
       <div className={leftSection}>
         <h1 className={logo}>Pint.</h1>
-        
+
         <form onSubmit={handleSubmit} className={`${formWrapper} flex flex-col gap-4`}>
           {/* Email Address */}
           <div className={inputGroup}>
             <label className={label}>EMAIL ADDRESS</label>
             <div className="relative">
-              <input 
+              <input
                 name="email"
-                type="email" 
-                className={`${input} w-full`} 
-                placeholder="example@pint.com" 
+                type="email"
+                className={`${input} w-full`}
+                placeholder="example@pint.com"
                 value={formData.email}
                 onChange={handleChange}
                 required
               />
-              <button 
+              <button
                 type="button"
                 onClick={handleCheckEmail}
-                className={`absolute right-0 bottom-2 text-[10px] bg-white text-black px-4 py-1 rounded-full border border-black transition-all duration-300 ${isLogin ? 'opacity-0 pointer-events-none' : 'opacity-100 hover:bg-black hover:text-white'}`}>
-                Check Availability
+                className={`absolute right-0 bottom-2 text-[10px] bg-white text-black px-4 py-1 rounded-full border border-black transition-all duration-300
+                  ${isLogin ? 'opacity-0 pointer-events-none' : 'opacity-100'} 
+                  ${isEmailChecked ? 'bg-green-500 text-white border-green-500' : 'bg-white text-black border-white hover:bg-black hover:text-white'}`}>
+                {isEmailChecked ? "Verified" : "Check Availability"}
               </button>
             </div>
           </div>
@@ -124,11 +149,11 @@ const Login: React.FC = () => {
           {/* Password */}
           <div className={inputGroup}>
             <label className={label}>PASSWORD</label>
-            <input 
+            <input
               name="pw"
-              type="password" 
-              className={input} 
-              placeholder="••••••••" 
+              type="password"
+              className={input}
+              placeholder="••••••••"
               value={formData.pw}
               onChange={handleChange}
               required
@@ -139,22 +164,22 @@ const Login: React.FC = () => {
           <div className={`flex flex-col gap-4 transition-all duration-500 ease-in-out overflow-hidden ${isLogin ? 'max-h-0 opacity-0' : 'max-h-[250px] opacity-100'}`}>
             <div className={inputGroup}>
               <label className={label}>VERIFY PASSWORD</label>
-              <input 
+              <input
                 name="verifyPw"
-                type="password" 
-                className={input} 
-                placeholder="••••••••" 
+                type="password"
+                className={input}
+                placeholder="••••••••"
                 value={formData.verifyPw}
                 onChange={handleChange}
               />
             </div>
             <div className={inputGroup}>
               <label className={label}>USERNAME</label>
-              <input 
+              <input
                 name="username"
-                type="text" 
-                className={input} 
-                placeholder="Your unique name" 
+                type="text"
+                className={input}
+                placeholder="Your unique name"
                 value={formData.username}
                 onChange={handleChange}
               />
@@ -163,11 +188,14 @@ const Login: React.FC = () => {
 
           {/* 버튼 섹션 */}
           <div className="flex flex-col gap-4 mt-6">
-            <button type="submit" className={button}>
+            <button type="submit" className={`${button} ${!isFormValid ? 'cursor-not-allowed grayscale' : ''}`} disabled={!isFormValid}>
               {isLogin ? "SIGN IN" : "SIGN UP"}
             </button>
 
-            <p className={toggleText} onClick={() => setIsLogin(!isLogin)}>
+            <p className={toggleText} onClick={() => {
+              setIsLogin(!isLogin)
+              setIsEmailChecked(false);
+            }}>
               {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Log In"}
             </p>
           </div>

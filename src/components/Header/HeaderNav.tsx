@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { User, LogOut } from 'lucide-react';
 
 // 💡 분리한 스타일 파일들을 가져옵니다.
-import { HEADER_STYLES } from '../../constants/headerStyles';
-import { Header_NAV_STYLES } from '../../constants/HeaderNavStyles'; 
+import { HEADER_STYLES } from '../../styles/headerStyles';
 import { useUserStore } from '../../store/useUserStore';
 import { cn } from '../../lib/utils';
+import { Header_NAV_STYLES } from '../../styles/HeaderNavStyles';
 
 const HeaderNav: React.FC<{ myId: number }> = ({ myId }) => {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,4 +1,4 @@
-import api from './axios';
+import api from './apiClient';
 
 // 프로필 정보 조회
 export const fetchUserProfileData = async (userId: number) => {

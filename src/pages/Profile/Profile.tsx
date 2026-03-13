@@ -4,7 +4,7 @@ import PostDetailModal from './PostDetailModal';
 import ProfileEditModal from './ProfileEditModal'; 
 import type { ProfileResponse, PostDetail } from '../../types/ProfileData';
 import { cn } from '../../lib/utils';
-import { PROFILE_STYLES as styles } from '../../constants/styles';
+import { PROFILE_STYLES as styles } from '../../styles/profileStyles';
 
 const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   const [profileData, setProfileData] = useState<ProfileResponse | null>(null);

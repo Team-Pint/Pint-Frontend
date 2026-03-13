@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Pencil, Trash2, Info } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { DETAIL_MODAL_STYLES as styles } from '../../constants/styles';
+import { DETAIL_MODAL_STYLES as styles } from '../../styles/profileStyles';
 import type { PostDetail } from '../../types/ProfileData';
 import MoreInfoModal from '../../components/MoreInfoModal/MoreInfoModal';
 

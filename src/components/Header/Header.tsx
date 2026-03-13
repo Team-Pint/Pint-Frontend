@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { HEADER_STYLES } from '../../constants/headerStyles';
+import { HEADER_STYLES } from '../../styles/headerStyles';
 import PostUploadModal from '../PostUploadModal/PostUploadModal';
 // 💡 HeaderNav를 가져옵니다!
 import HeaderNav from './HeaderNav';

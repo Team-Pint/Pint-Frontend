@@ -1,5 +1,5 @@
 import type { PostList, PostListResponse } from "../types/PostListResponse";
-import api from "./axios"
+import api from "./apiClient"
 
 export const allPostApi = async (): Promise<PostList[]> => {
     

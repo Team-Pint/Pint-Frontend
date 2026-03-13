@@ -1,7 +1,7 @@
 import type React from "react";
 import type { PostUploadRequest } from "../../types/PostUpload";
 import { useRef } from "react";
-import { INFO_INPUT_STEP } from "../../constants/postUploadStyles";
+import { INFO_INPUT_STEP } from "../../styles/postUploadStyles";
 
 interface Props {
     data: PostUploadRequest;

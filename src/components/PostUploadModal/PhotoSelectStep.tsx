@@ -1,6 +1,6 @@
 import type { ChangeEvent } from "react";
 import type React from "react";
-import { PHOTO_SELECT_STEP } from "../../constants/postUploadStyles";
+import { PHOTO_SELECT_STEP } from "../../styles/postUploadStyles";
 
 interface Props {
     previewImage: string;

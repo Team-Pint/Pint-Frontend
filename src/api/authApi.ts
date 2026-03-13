@@ -1,7 +1,7 @@
-import api from './axios';
+import api from './apiClient';
 
 // 회원가입
-export const signUp = async (data: { email: string; password: string; userName: string }) => {
+export const signUp = async (data: { email: string; password: string; username: string }) => {
   const response = await api.post('/auth/signup', data);
   return response.data;
 };
@@ -14,6 +14,10 @@ export const signIn = async (data: { email: string; password: string }) => {
 
 // 이메일 중복 확인
 export const checkEmail = async (email: string) => {
-  const response = await api.get(`/auth/check-email?email=${email}`);
+  const response = await api.post(`/auth/unique`, null, {
+    params: {
+      email: email
+    }
+  });
   return response.data;
 };
