@@ -39,6 +39,10 @@ interface Item {
     height: number;
     location: string;
     camera: string;
+    //likeCount: number;
+    //isLiked: boolean;
+    //username: string;
+    //profileUrl: string;
 }
 
 interface GridItem extends Item {
