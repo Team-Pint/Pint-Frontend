@@ -33,8 +33,8 @@ const Home = () => {
         camera: post.camera,
         isLiked: post.isLiked,
         likeCount: post.likeCount,
-        username: post.username,
-        profileUrl: post.profileUrl
+        username: post.userInfo.username,
+        profileUrl: post.userInfo.profileImage
     })), [posts]);
 
     if (loading) return "로딩 중...";

@@ -1,3 +1,10 @@
+export interface UserInfo {
+    userId: number;
+    username: string;
+    profileImage: string;
+    isWriter: boolean;
+}
+
 export interface PostList {
     id: number;
     imageUrl: string;
@@ -7,8 +14,7 @@ export interface PostList {
     camera: string;
     isLiked: boolean;
     likeCount: number;
-    username: string;
-    profileUrl: string;
+    userInfo: UserInfo;
 }
 
 export interface PostListResponse {
@@ -16,5 +22,13 @@ export interface PostListResponse {
     message: string;
     data: {
         postList: PostList[];
-    }
+        page: number;
+        size: number;
+        totalElements: number;
+        totalPages: number;
+        hasNext: boolean;
+        hasPrevious: boolean;
+        isFirst: boolean;
+        isLast: boolean;
+    };
 }
