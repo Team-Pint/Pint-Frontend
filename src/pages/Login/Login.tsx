@@ -81,10 +81,13 @@ const Login: React.FC = () => {
         const res = await signIn({ email: formData.email, password: formData.pw });
 
         if (res.code === 200 || res.message === "Success") {
-          const csrfToken = res.data.csrfToken;
+          const userId = res.data.userid ?? res.data.userId;
 
           // 이후 요청을 위해 저장 (메모리나 보안 스토리지 권장)
-          sessionStorage.setItem('csrfToken', csrfToken);
+//           sessionStorage.setItem('csrfToken', csrfToken);
+          if (userId !== undefined && userId !== null) {
+            localStorage.setItem('userId', String(userId));
+          }
           alert("로그인 성공!");
           navigate('/home');
         } else {

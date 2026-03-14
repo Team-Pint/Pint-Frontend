@@ -7,7 +7,7 @@ import { Header_NAV_STYLES } from '../../styles/headerNavStyles';
 import { signOut } from '../../api/authApi';
 import { headerApi } from '../../api/headerApi';
 
-const HeaderNav: React.FC<{ myId: number }> = ({ myId }) => {
+const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileImage, setProfileImage] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -50,6 +50,11 @@ const HeaderNav: React.FC<{ myId: number }> = ({ myId }) => {
 
   // 4. 이벤트 핸들러
   const handleProfileClick = () => {
+    if (!myId || !Number.isInteger(myId) || myId <= 0) {
+      alert("로그인 정보가 없습니다. 로그인 후 이용해주세요.");
+      navigate("/login");
+      return;
+    }
     navigate(`/profile/${myId}`);
     setIsOpen(false);
   };
@@ -58,6 +63,7 @@ const HeaderNav: React.FC<{ myId: number }> = ({ myId }) => {
     try {
       await signOut();
 
+      localStorage.removeItem("userId");
       localStorage.clear();
       sessionStorage.clear();
 

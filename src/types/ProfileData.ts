@@ -1,16 +1,34 @@
 export interface PostSummary {
   postId: number;
-  imgUrl: string;
+  imageUrl: string;
+  location?: string;
+  camera?: string;
+  description?: string;
 }
 
 export interface ProfileResponse {
   username: string;
-  description: string;
+  introduction: string;
   city: string;
   email: string;
   isMe: boolean;
+  profileImageUrl?: string;
+  profileImage?: string;
   postList: PostSummary[];
-  profileImage: string;
+  likedPostList: PostSummary[];
+}
+
+export interface ProfileUpdatePayload {
+  username?: string;
+  city?: string;
+  introduction?: string;
+  profileImage?: File;
+}
+
+export interface UserProfileApiResponse {
+  code?: number;
+  message?: string;
+  data?: ProfileResponse;
 }
 
 export interface PostDetail {
