@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 
 const useMeasure = <T extends HTMLElement>() => {
@@ -73,6 +74,7 @@ const Masonry: React.FC<MasonryProps> = ({
     animateFrom = 'bottom',
     blurToFocus = true,
 }) => {
+    const navigate = useNavigate();
     const [containerRef, { width }] = useMeasure<HTMLDivElement>();
     const [imagesReady, setImagesReady] = useState(false);
 
@@ -193,8 +195,9 @@ const Masonry: React.FC<MasonryProps> = ({
                 <div
                     key={item.id}
                     data-key={item.id}
-                    className="absolute overflow-hidden"
+                    className="absolute overflow-hidden cursor-pointer"
                     style={{ willChange: 'transform, width, height, opacity' }}
+                    onClick={() => navigate(`/post/${item.id}`)}
                     onMouseEnter={e => handleMouseEnter(e.currentTarget)}
                     onMouseLeave={e => handleMouseLeave(e.currentTarget)}
                 >
