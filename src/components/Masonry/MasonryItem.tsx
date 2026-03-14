@@ -4,9 +4,10 @@ import { gsap } from 'gsap';
 interface MasonryItemProps {
     item: any;
     handleLikeToggle: (e: React.MouseEvent, id: string) => void;
+    onItemClick: () => void;
 }
 
-const MasonryItem: React.FC<MasonryItemProps> = ({ item, handleLikeToggle }) => {
+const MasonryItem: React.FC<MasonryItemProps> = ({ item, handleLikeToggle, onItemClick }) => {
     const itemRef = useRef<HTMLDivElement>(null);
 
     // 마우스 올렸을 때
@@ -38,6 +39,7 @@ const MasonryItem: React.FC<MasonryItemProps> = ({ item, handleLikeToggle }) => 
             style={{ willChange: 'transform, width, height, opacity' }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            onClick={onItemClick}
         >
             <div
                 className="relative w-full h-full bg-cover bg-center"

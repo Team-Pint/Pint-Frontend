@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { postLikeApi } from "../../api/postLikeApi";
 import MasonryItem from './MasonryItem';
@@ -74,6 +75,7 @@ const Masonry: React.FC<MasonryProps> = ({
     animateFrom = 'bottom',
     blurToFocus = true,
 }) => {
+    const navigate = useNavigate();
     const [containerRef, { width }] = useMeasure<HTMLDivElement>();
     const [imagesReady, setImagesReady] = useState(false);
     const [itemList, setItemList] = useState(initialItems);
@@ -176,6 +178,10 @@ const Masonry: React.FC<MasonryProps> = ({
         }
     }
 
+    const handleItemClick = (id: string) => {
+        navigate(`/post/${id}`);
+    };
+
     return (
         <div
             ref={containerRef}
@@ -186,7 +192,8 @@ const Masonry: React.FC<MasonryProps> = ({
                 <MasonryItem
                     key={item.id}
                     item={item}
-                    handleLikeToggle={handleLikeToggle} />
+                    handleLikeToggle={handleLikeToggle}
+                    onItemClick={() => handleItemClick(item.id)} />
             ))}
         </div >
     );
