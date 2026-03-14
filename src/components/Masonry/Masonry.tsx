@@ -70,8 +70,6 @@ const Masonry: React.FC<MasonryProps> = ({
     items: initialItems,
     columns = 3,
     gap = 16,
-    ease = 'power3.out',
-    duration = 0.6,
     stagger = 0.05,
     animateFrom = 'bottom',
     blurToFocus = true,
@@ -148,13 +146,11 @@ const Masonry: React.FC<MasonryProps> = ({
                     }
                 );
             } else {
-                gsap.to(selector, {
+                gsap.set(selector, {
                     x: item.x,
                     y: item.y,
                     width: item.w,
                     height: item.h,
-                    duration,
-                    ease,
                     overwrite: 'auto'
                 });
             }
