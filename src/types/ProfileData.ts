@@ -13,11 +13,17 @@ export interface ProfileResponse {
   email: string;
   isMe: boolean;
   profileImageUrl?: string;
+  profileImage?: string;
   postList: PostSummary[];
   likedPostList: PostSummary[];
 }
 
-export type ProfileUpdatePayload = Omit<Partial<ProfileResponse>, "postList">;
+export interface ProfileUpdatePayload {
+  username?: string;
+  city?: string;
+  introduction?: string;
+  profileImage?: File;
+}
 
 export interface UserProfileApiResponse {
   code?: number;

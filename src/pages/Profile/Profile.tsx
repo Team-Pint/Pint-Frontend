@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import PostDetailModal from "./PostDetailModal";
 import { Pencil } from "lucide-react";
 import ProfileEditModal from "./ProfileEditModal";
-import type { ProfileResponse, PostSummary } from "../../types/ProfileData";
+import type {
+  ProfileResponse,
+  ProfileUpdatePayload,
+  PostSummary,
+} from "../../types/ProfileData";
 import type { PostDetail } from "../../types/ProfileData";
 import { cn } from "../../lib/utils";
 import { PROFILE_STYLES as styles } from "../../styles/profileStyles";
-import { fetchUserProfileData } from "../../api/profileApi";
+import { fetchUserProfileData, updateProfileData } from "../../api/profileApi";
 
 const formatUsernameLines = (rawName: string): string[] => {
   // 이름을 화면 폭에 맞게 1~2줄로 나눠 표시합니다.
@@ -42,6 +46,33 @@ const normalizeTextForForm = (
   return raw === fallback || !raw ? "" : raw;
 };
 
+type ProfileUpdateInput = Partial<Omit<ProfileResponse, "profileImage">> & {
+  profileImage?: File;
+};
+
+const buildProfileUpdatePayload = (
+  updatedData: ProfileUpdateInput,
+): ProfileUpdatePayload => {
+  const payload: ProfileUpdatePayload = {};
+
+  if ("username" in updatedData) {
+    payload.username = (updatedData.username ?? "").trim();
+  }
+  if ("city" in updatedData) {
+    payload.city = (updatedData.city ?? "").trim();
+  }
+  if ("introduction" in updatedData) {
+    payload.introduction = (updatedData.introduction ?? "").trim();
+  }
+  if ("profileImage" in updatedData) {
+    if (updatedData.profileImage instanceof File) {
+      payload.profileImage = updatedData.profileImage;
+    }
+  }
+
+  return payload;
+};
+
 type ProfileTab = "feed" | "likes";
 
 const Profile: React.FC<{ userId: number }> = ({ userId }) => {
@@ -49,6 +80,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   const [selectedPost, setSelectedPost] = useState<PostDetail | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>("feed");
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
 
   // API 요청 상태
   const [loading, setLoading] = useState(true);
@@ -161,18 +193,47 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   const usernameLines = formatUsernameLines(displayUsername);
   const isFeedTab = activeTab === "feed";
   const visiblePostList = isMe && !isFeedTab ? likedPostList : postList;
-  const modalProfileData: ProfileResponse = {
+  const modalProfileData: Omit<ProfileResponse, "profileImage"> = {
     ...profileData,
     city: normalizeTextForForm(city, CITY_PLACEHOLDER),
     introduction: normalizeTextForForm(introduction, INTRODUCTION_PLACEHOLDER),
   };
 
-  const handleSaveProfile = (updatedData: Partial<ProfileResponse>) => {
+  const handleSaveProfile = async (updatedData: ProfileUpdateInput) => {
     if (!profileData) return;
 
-    // 현재 데이터에 수정된 데이터로 덮어쓰기
-    setProfileData({ ...profileData, ...updatedData });
-    setIsEditModalOpen(false);
+    const payload = buildProfileUpdatePayload(updatedData);
+
+    if (Object.keys(payload).length === 0) {
+      setIsEditModalOpen(false);
+      return;
+    }
+
+    try {
+      setIsSavingProfile(true);
+      const updatedProfile = await updateProfileData(userId, payload);
+      const serializedPayload = { ...payload };
+
+      const {
+        profileImage: _ignoredProfileImage,
+        ...profileTextPayload
+      } = serializedPayload;
+      void _ignoredProfileImage;
+
+      const mergedProfile: ProfileResponse = {
+        ...profileData,
+        ...updatedProfile,
+        ...profileTextPayload,
+      };
+
+      setProfileData(mergedProfile);
+      setIsEditModalOpen(false);
+    } catch (err) {
+      console.error("프로필 수정 실패:", err);
+      alert("프로필 수정에 실패했습니다.");
+    } finally {
+      setIsSavingProfile(false);
+    }
   };
 
   const handleOpenPostDetail = (post: PostSummary, fromLikes: boolean) => {
@@ -285,6 +346,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
         onClose={() => setIsEditModalOpen(false)}
         data={modalProfileData}
         onSave={handleSaveProfile}
+        isSaving={isSavingProfile}
       />
     </div>
   );
