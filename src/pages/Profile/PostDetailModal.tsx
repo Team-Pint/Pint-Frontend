@@ -87,6 +87,7 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ post, onClose }) => {
       {isPresetOpen && (
         <MoreInfoModal
           imgUrl={imgUrl}
+          filter={null}
           onClose={() => setIsPresetOpen(false)}
         />
       )}
