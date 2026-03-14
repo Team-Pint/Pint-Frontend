@@ -1,16 +1,28 @@
 export interface PostSummary {
   postId: number;
-  imgUrl: string;
+  imageUrl: string;
+  location?: string;
+  camera?: string;
+  description?: string;
 }
 
 export interface ProfileResponse {
   username: string;
-  description: string;
+  introduction: string;
   city: string;
   email: string;
   isMe: boolean;
+  profileImageUrl?: string;
   postList: PostSummary[];
-  profileImage: string;
+  likedPostList: PostSummary[];
+}
+
+export type ProfileUpdatePayload = Omit<Partial<ProfileResponse>, "postList">;
+
+export interface UserProfileApiResponse {
+  code?: number;
+  message?: string;
+  data?: ProfileResponse;
 }
 
 export interface PostDetail {
