@@ -1,6 +1,8 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { postLikeApi } from "../../api/postLikeApi";
+import MasonryItem from './MasonryItem';
+import { useMasonryLayout } from '../../hooks/useMasonryLayout';
 
 const useMeasure = <T extends HTMLElement>() => {
     const ref = useRef<T | null>(null);
@@ -77,7 +79,11 @@ const Masonry: React.FC<MasonryProps> = ({
     const [containerRef, { width }] = useMeasure<HTMLDivElement>();
     const [imagesReady, setImagesReady] = useState(false);
     const [itemList, setItemList] = useState(initialItems);
+    const hasMounted = useRef(false);
 
+    const { grid, totalHeight } = useMasonryLayout(itemList, width, columns, gap);
+
+    // 초기 위치 계산 함수 (GSAP 초기 애니메이션용)
     const getInitialPosition = (item: GridItem) => {
         const containerRect = containerRef.current?.getBoundingClientRect();
         if (!containerRect) return { x: item.x, y: item.y };
@@ -98,45 +104,25 @@ const Masonry: React.FC<MasonryProps> = ({
         }
     };
 
+    // 데이터 동기화
     useEffect(() => {
         setItemList(initialItems);
     }, [initialItems])
 
+    // 프리로딩
     useEffect(() => {
         if (initialItems.length > 0) {
             preloadImages(initialItems.map(i => i.img)).then(() => setImagesReady(true));
         }
     }, [initialItems]);
 
-    const { grid, totalHeight } = useMemo(() => {
-        if (!width) return { grid: [], totalHeight: 0 };
-
-        const colHeights = new Array(columns).fill(0);
-        const totalGaps = (columns - 1) * gap;
-        const columnWidth = (width - totalGaps) / columns;
-
-        const calculatedGrid = itemList.map(item => {
-            const col = colHeights.indexOf(Math.min(...colHeights));
-            const x = col * (columnWidth + gap);
-            const y = colHeights[col];
-
-            const itemHeight = (item.height / item.width) * columnWidth;
-
-            colHeights[col] += itemHeight + gap;
-
-            return { ...item, x, y, w: columnWidth, h: itemHeight };
-        });
-
-        return { grid: calculatedGrid, totalHeight: Math.max(...colHeights) };
-    }, [columns, itemList, width, gap]);
-
-    const hasMounted = useRef(false);
-
+    // 레이아웃 애니메이션 (GSAP)
     useLayoutEffect(() => {
         if (!imagesReady || grid.length === 0) return;
 
         grid.forEach((item, index) => {
             const selector = `[data-key="${item.id}"]`;
+
             if (!hasMounted.current) {
                 const start = getInitialPosition(item);
                 gsap.fromTo(
@@ -177,45 +163,6 @@ const Masonry: React.FC<MasonryProps> = ({
         hasMounted.current = true;
     }, [grid, imagesReady]);
 
-
-    // 마우스 올렸을 때
-    const handleMouseEnter = (element: HTMLElement) => {
-        const topOverlay = element.querySelector('.top-overlay') as HTMLElement;
-        const bottomOverlay = element.querySelector('.bottom-overlay') as HTMLElement;
-        const topInfo = element.querySelector('.top-info');
-        const bottomInfo = element.querySelector('.bottom-info');
-
-        if (topOverlay) gsap.to(topOverlay, { opacity: 1, duration: 0.1, overwrite: 'auto' });
-        if (bottomOverlay) gsap.to(bottomOverlay, { opacity: 1, duration: 0.1, overwrite: 'auto' });
-
-        if (topInfo) {
-            gsap.fromTo(topInfo,
-                { y: -20, opacity: 0 },
-                { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', overwrite: 'auto' }
-            );
-        }
-
-        if (bottomInfo) {
-            gsap.fromTo(bottomInfo,
-                { y: 20, opacity: 0 },
-                { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', overwrite: 'auto' }
-            );
-        }
-    };
-
-    // 마우스 내렸을 때
-    const handleMouseLeave = (element: HTMLElement) => {
-        const topOverlay = element.querySelector('.top-overlay') as HTMLElement;
-        const bottomOverlay = element.querySelector('.bottom-overlay') as HTMLElement;
-        const topInfo = element.querySelector('.top-info');
-        const bottomInfo = element.querySelector('.bottom-info');
-
-        if (topOverlay) gsap.to(topOverlay, { opacity: 0, duration: 0.3, overwrite: 'auto' });
-        if (bottomOverlay) gsap.to(bottomOverlay, { opacity: 0, duration: 0.3, overwrite: 'auto' });
-        if (topInfo) gsap.to(topInfo, { y: -10, opacity: 0, duration: 0.3, overwrite: 'auto' });
-        if (bottomInfo) gsap.to(bottomInfo, { y: 10, opacity: 0, duration: 0.3, overwrite: 'auto' });
-    };
-
     // 좋아요 클릭 이벤트
     const handleLikeToggle = async (e: React.MouseEvent, postId: string) => {
         e.stopPropagation();
@@ -240,62 +187,10 @@ const Masonry: React.FC<MasonryProps> = ({
             style={{ height: totalHeight, minHeight: '400px' }}
         >
             {imagesReady && grid.map(item => (
-                <div
+                <MasonryItem
                     key={item.id}
-                    data-key={item.id}
-                    className="absolute overflow-hidden cursor-pointer"
-                    style={{ willChange: 'transform, width, height, opacity' }}
-                    onMouseEnter={e => handleMouseEnter(e.currentTarget)}
-                    onMouseLeave={e => handleMouseLeave(e.currentTarget)}
-                >
-                    <div
-                        className="relative w-full h-full bg-cover bg-center"
-                        style={{ backgroundImage: `url(${item.img})` }}
-                    >
-                        {/* 검정 배경 그라데이션 */}
-                        <div
-                            className="top-overlay absolute inset-0 opacity-0 pointer-events-none"
-                            style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 50%)' }}
-                        />
-                        <div
-                            className="bottom-overlay absolute inset-0 opacity-0 pointer-events-none"
-                            style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 50%)' }}
-                        />
-
-                        <div className="absolute inset-0 flex flex-col justify-between p-7 text-white pointer-events-none">
-                            {/* 상단 영역 (장소, 카메라) */}
-                            <div className="top-info opacity-0 flex flex-col gap-1">
-                                {/* 장소 */}
-                                <div className="flex items-center gap-1.5">
-                                    <p className="text-xl font-semibold">{item.location || 'Location unknown'}</p>
-                                </div>
-
-                                {/* 카메라 */}
-                                <div className="flex items-center gap-1.5">
-                                    <p className="text-xs font-light">{item.camera || 'Device info unavailable'}</p>
-                                </div>
-                            </div>
-
-                            {/* 하단 영역 (유저 정보, 좋아요) */}
-                            <div className="bottom-info opacity-0 flex justify-between items-center">
-                                {/* 유저 정보 */}
-                                <div className="flex items-center gap-2.5">
-                                    <img src={item.profileUrl} alt={item.username} className="w-8 h-8 rounded-full object-cover" />
-                                    <span className="text-sm font-medium">{item.username}</span>
-                                </div>
-
-                                {/* 좋아요 */}
-                                <button
-                                    onClick={(e) => handleLikeToggle(e, item.id)}
-                                    className="pointer-events-auto p-2"
-                                >
-                                    <img src={item.isLiked ? "/images/ic_like_true.svg" : "/images/ic_like_false.svg"} alt="Like" className="w-5 h-5" />
-                                    <span className="text-xs text-[#FF0000]">{item.likeCount}</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    item={item}
+                    handleLikeToggle={handleLikeToggle} />
             ))}
         </div >
     );
