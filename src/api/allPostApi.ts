@@ -1,9 +1,8 @@
-import type { PostList, PostListResponse } from "../types/PostListResponse";
+import type { PostListResponse } from "../types/PostListResponse";
 import api from './apiClient';
 
-export const allPostApi = async (): Promise<PostList[]> => {
+export const allPostApi = async (page: number, size: number = 10) => {
+    const response = await api.get<PostListResponse>(`/posts?page=${page}&size=${size}`);
     
-    const response = await api.get<PostListResponse>("/posts");
-
-    return response.data.data.postList || [];
+    return response.data.data;
 }

@@ -41,3 +41,26 @@ export interface PostDetail {
   profileImage: string;
   isWriter: boolean;
 }
+
+export interface FilterData {
+  basicAdjustments: Record<string, string>;
+  colorAdjustments: Record<string, string>;
+  detailAdjustments: Record<string, string>;
+}
+
+export interface PostDetailApiResponse {
+  id: number;
+  userInfo: {
+    userId: number;
+    username: string;
+    profileImage: string | null;
+    isWriter: boolean;
+  };
+  description: string;
+  location: string;
+  postImgUrl: string;
+  isLiked: boolean;
+  likeCount: number;
+  filter: FilterData | null;
+  createdAt: string;
+}
