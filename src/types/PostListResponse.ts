@@ -5,7 +5,10 @@ export interface PostList {
     height: number;
     location: string;
     camera: string;
-    // isLiked: boolean;
+    isLiked: boolean;
+    likeCount: number;
+    username: string;
+    profileUrl: string;
 }
 
 export interface PostListResponse {

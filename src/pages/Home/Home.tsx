@@ -31,10 +31,10 @@ const Home = () => {
         height: post.height,
         location: post.location,
         camera: post.camera,
-        // isLiked: post.isLiked,
-        // likeCount: post.likeCount
-        // username: post.username,
-        // profileUrl: post.profileUrl
+        isLiked: post.isLiked,
+        likeCount: post.likeCount,
+        username: post.username,
+        profileUrl: post.profileUrl
     })), [posts]);
 
     if (loading) return "로딩 중...";

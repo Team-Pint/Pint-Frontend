@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { postLikeApi } from "../../api/postLikeApi";
 
 const useMeasure = <T extends HTMLElement>() => {
     const ref = useRef<T | null>(null);
@@ -39,10 +40,10 @@ interface Item {
     height: number;
     location: string;
     camera: string;
-    //likeCount: number;
-    //isLiked: boolean;
-    //username: string;
-    //profileUrl: string;
+    likeCount: number;
+    isLiked: boolean;
+    username: string;
+    profileUrl: string;
 }
 
 interface GridItem extends Item {
@@ -64,7 +65,7 @@ interface MasonryProps {
 }
 
 const Masonry: React.FC<MasonryProps> = ({
-    items,
+    items: initialItems,
     columns = 3,
     gap = 16,
     ease = 'power3.out',
@@ -75,6 +76,7 @@ const Masonry: React.FC<MasonryProps> = ({
 }) => {
     const [containerRef, { width }] = useMeasure<HTMLDivElement>();
     const [imagesReady, setImagesReady] = useState(false);
+    const [itemList, setItemList] = useState(initialItems);
 
     const getInitialPosition = (item: GridItem) => {
         const containerRect = containerRef.current?.getBoundingClientRect();
@@ -97,8 +99,14 @@ const Masonry: React.FC<MasonryProps> = ({
     };
 
     useEffect(() => {
-        preloadImages(items.map(i => i.img)).then(() => setImagesReady(true));
-    }, [items]);
+        setItemList(initialItems);
+    }, [initialItems])
+
+    useEffect(() => {
+        if (initialItems.length > 0) {
+            preloadImages(initialItems.map(i => i.img)).then(() => setImagesReady(true));
+        }
+    }, [initialItems]);
 
     const { grid, totalHeight } = useMemo(() => {
         if (!width) return { grid: [], totalHeight: 0 };
@@ -107,7 +115,7 @@ const Masonry: React.FC<MasonryProps> = ({
         const totalGaps = (columns - 1) * gap;
         const columnWidth = (width - totalGaps) / columns;
 
-        const calculatedGrid = items.map(item => {
+        const calculatedGrid = itemList.map(item => {
             const col = colHeights.indexOf(Math.min(...colHeights));
             const x = col * (columnWidth + gap);
             const y = colHeights[col];
@@ -120,7 +128,7 @@ const Masonry: React.FC<MasonryProps> = ({
         });
 
         return { grid: calculatedGrid, totalHeight: Math.max(...colHeights) };
-    }, [columns, items, width, gap]);
+    }, [columns, itemList, width, gap]);
 
     const hasMounted = useRef(false);
 
@@ -169,19 +177,61 @@ const Masonry: React.FC<MasonryProps> = ({
         hasMounted.current = true;
     }, [grid, imagesReady]);
 
+
+    // 마우스 올렸을 때
     const handleMouseEnter = (element: HTMLElement) => {
-        const bgOverlay = element.querySelector('.bg-overlay') as HTMLElement;
-        const textContent = element.querySelector('.text-content') as HTMLElement;
-        if (bgOverlay) gsap.to(bgOverlay, { opacity: 1, duration: 0.2 });
-        if (textContent) gsap.fromTo(textContent, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 });
+        const topOverlay = element.querySelector('.top-overlay') as HTMLElement;
+        const bottomOverlay = element.querySelector('.bottom-overlay') as HTMLElement;
+        const topInfo = element.querySelector('.top-info');
+        const bottomInfo = element.querySelector('.bottom-info');
+
+        if (topOverlay) gsap.to(topOverlay, { opacity: 1, duration: 0.1, overwrite: 'auto' });
+        if (bottomOverlay) gsap.to(bottomOverlay, { opacity: 1, duration: 0.1, overwrite: 'auto' });
+
+        if (topInfo) {
+            gsap.fromTo(topInfo,
+                { y: -20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', overwrite: 'auto' }
+            );
+        }
+
+        if (bottomInfo) {
+            gsap.fromTo(bottomInfo,
+                { y: 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', overwrite: 'auto' }
+            );
+        }
     };
 
+    // 마우스 내렸을 때
     const handleMouseLeave = (element: HTMLElement) => {
-        const bgOverlay = element.querySelector('.bg-overlay') as HTMLElement;
-        const textContent = element.querySelector('.text-content') as HTMLElement;
-        if (bgOverlay) gsap.to(bgOverlay, { opacity: 0, duration: 0.3 });
-        if (textContent) gsap.to(textContent, { y: 10, opacity: 0, duration: 0.3 });
+        const topOverlay = element.querySelector('.top-overlay') as HTMLElement;
+        const bottomOverlay = element.querySelector('.bottom-overlay') as HTMLElement;
+        const topInfo = element.querySelector('.top-info');
+        const bottomInfo = element.querySelector('.bottom-info');
+
+        if (topOverlay) gsap.to(topOverlay, { opacity: 0, duration: 0.3, overwrite: 'auto' });
+        if (bottomOverlay) gsap.to(bottomOverlay, { opacity: 0, duration: 0.3, overwrite: 'auto' });
+        if (topInfo) gsap.to(topInfo, { y: -10, opacity: 0, duration: 0.3, overwrite: 'auto' });
+        if (bottomInfo) gsap.to(bottomInfo, { y: 10, opacity: 0, duration: 0.3, overwrite: 'auto' });
     };
+
+    // 좋아요 클릭 이벤트
+    const handleLikeToggle = async (e: React.MouseEvent, postId: string) => {
+        e.stopPropagation();
+
+        try {
+            const response = await postLikeApi(postId);
+            if (response.code === 200 && response.message === "Success") {
+                const { isLiked, likeCount } = response.data;
+                setItemList(prev => prev.map(item =>
+                    item.id === postId ? { ...item, isLiked, likeCount } : item
+                ));
+            }
+        } catch (error) {
+            console.error("Like error:", error);
+        }
+    }
 
     return (
         <div
@@ -193,7 +243,7 @@ const Masonry: React.FC<MasonryProps> = ({
                 <div
                     key={item.id}
                     data-key={item.id}
-                    className="absolute overflow-hidden"
+                    className="absolute overflow-hidden cursor-pointer"
                     style={{ willChange: 'transform, width, height, opacity' }}
                     onMouseEnter={e => handleMouseEnter(e.currentTarget)}
                     onMouseLeave={e => handleMouseLeave(e.currentTarget)}
@@ -202,29 +252,51 @@ const Masonry: React.FC<MasonryProps> = ({
                         className="relative w-full h-full bg-cover bg-center"
                         style={{ backgroundImage: `url(${item.img})` }}
                     >
-                        <div className="bg-overlay absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 flex flex-col justify-end p-12 text-white pointer-events-none">
-                            {/* 정보 영역 */}
-                            <div className="text-content opacity-0 flex items-end justify-between w-full">
-                                {/* 텍스트 영역 */}
-                                <div className="flex-1 min-w-0 pr-4">
-                                    <p className="text-base">
-                                        {item.location || '장소 정보 없음'}
-                                    </p>
-                                    <p className="text-xs mt-1 font-light">
-                                        {item.camera || '카메라 정보 없음'}
-                                    </p>
+                        {/* 검정 배경 그라데이션 */}
+                        <div
+                            className="top-overlay absolute inset-0 opacity-0 pointer-events-none"
+                            style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 50%)' }}
+                        />
+                        <div
+                            className="bottom-overlay absolute inset-0 opacity-0 pointer-events-none"
+                            style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 50%)' }}
+                        />
+
+                        <div className="absolute inset-0 flex flex-col justify-between p-7 text-white pointer-events-none">
+                            {/* 상단 영역 (장소, 카메라) */}
+                            <div className="top-info opacity-0 flex flex-col gap-1">
+                                {/* 장소 */}
+                                <div className="flex items-center gap-1.5">
+                                    <p className="text-xl font-semibold">{item.location || 'Location unknown'}</p>
                                 </div>
 
-                                {/* 좋아요 버튼 영역 */}
-                                {/* <button onClick={(e) => e.stopPropagation()} className="pointer-events-auto p-2 transition-transform active:scale-90 hover:scale-110">
-                                <img src={`${item.isLiked ? "/images/ic_like_true.svg" : "/images/ic_like_false.svg"}`} alt='좋아요 버튼' className="w-4 h-4 object-contain" />
-                            </button> */}
+                                {/* 카메라 */}
+                                <div className="flex items-center gap-1.5">
+                                    <p className="text-xs font-light">{item.camera || 'Device info unavailable'}</p>
+                                </div>
+                            </div>
+
+                            {/* 하단 영역 (유저 정보, 좋아요) */}
+                            <div className="bottom-info opacity-0 flex justify-between items-center">
+                                {/* 유저 정보 */}
+                                <div className="flex items-center gap-2.5">
+                                    <img src={item.profileUrl} alt={item.username} className="w-8 h-8 rounded-full object-cover" />
+                                    <span className="text-sm font-medium">{item.username}</span>
+                                </div>
+
+                                {/* 좋아요 */}
+                                <button
+                                    onClick={(e) => handleLikeToggle(e, item.id)}
+                                    className="pointer-events-auto p-2"
+                                >
+                                    <img src={item.isLiked ? "/images/ic_like_true.svg" : "/images/ic_like_false.svg"} alt="Like" className="w-5 h-5" />
+                                    <span className="text-xs text-[#FF0000]">{item.likeCount}</span>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-            ))
-            }
+            ))}
         </div >
     );
 };
