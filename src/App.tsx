@@ -1,8 +1,9 @@
 import Home from './pages/Home/Home';
-import { Routes, Route, useParams, useLocation, Navigate } from 'react-router-dom'; // 💡 useLocation 추가
+import { Routes, Route, useParams, useLocation, Navigate } from 'react-router-dom';
 import Profile from './pages/Profile/Profile'
 import Header from './components/Header/Header';
 import Login from './pages/Login/Login';
+import PostDetail from './pages/PostDetail/PostDetail';
 
 // URL 파라미터 :userId를 추출하여 ProfilePage에 전달하는 컴포넌트
 const ProfileRouteWrapper = () => {
@@ -26,6 +27,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path='/home' element={<Home />} />
+        <Route path="/post/:postId" element={<PostDetail />} />
         <Route path="/profile/:userId" element={<ProfileRouteWrapper />} />
       </Routes>
     </>
