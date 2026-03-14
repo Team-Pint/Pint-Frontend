@@ -1,6 +1,8 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { postLikeApi } from "../../api/postLikeApi";
+import MasonryItem from './MasonryItem';
+import { useMasonryLayout } from '../../hooks/useMasonryLayout';
 
 const useMeasure = <T extends HTMLElement>() => {
     const ref = useRef<T | null>(null);
@@ -40,10 +42,10 @@ interface Item {
     height: number;
     location: string;
     camera: string;
-    //likeCount: number;
-    //isLiked: boolean;
-    //username: string;
-    //profileUrl: string;
+    likeCount: number;
+    isLiked: boolean;
+    username: string;
+    profileUrl: string;
 }
 
 interface GridItem extends Item {
@@ -65,19 +67,21 @@ interface MasonryProps {
 }
 
 const Masonry: React.FC<MasonryProps> = ({
-    items,
+    items: initialItems,
     columns = 3,
     gap = 16,
-    ease = 'power3.out',
-    duration = 0.6,
     stagger = 0.05,
     animateFrom = 'bottom',
     blurToFocus = true,
 }) => {
-    const navigate = useNavigate();
     const [containerRef, { width }] = useMeasure<HTMLDivElement>();
     const [imagesReady, setImagesReady] = useState(false);
+    const [itemList, setItemList] = useState(initialItems);
+    const hasMounted = useRef(false);
 
+    const { grid, totalHeight } = useMasonryLayout(itemList, width, columns, gap);
+
+    // 초기 위치 계산 함수 (GSAP 초기 애니메이션용)
     const getInitialPosition = (item: GridItem) => {
         const containerRect = containerRef.current?.getBoundingClientRect();
         if (!containerRect) return { x: item.x, y: item.y };
@@ -98,39 +102,25 @@ const Masonry: React.FC<MasonryProps> = ({
         }
     };
 
+    // 데이터 동기화
     useEffect(() => {
-        preloadImages(items.map(i => i.img)).then(() => setImagesReady(true));
-    }, [items]);
+        setItemList(initialItems);
+    }, [initialItems])
 
-    const { grid, totalHeight } = useMemo(() => {
-        if (!width) return { grid: [], totalHeight: 0 };
+    // 프리로딩
+    useEffect(() => {
+        if (initialItems.length > 0) {
+            preloadImages(initialItems.map(i => i.img)).then(() => setImagesReady(true));
+        }
+    }, [initialItems]);
 
-        const colHeights = new Array(columns).fill(0);
-        const totalGaps = (columns - 1) * gap;
-        const columnWidth = (width - totalGaps) / columns;
-
-        const calculatedGrid = items.map(item => {
-            const col = colHeights.indexOf(Math.min(...colHeights));
-            const x = col * (columnWidth + gap);
-            const y = colHeights[col];
-
-            const itemHeight = (item.height / item.width) * columnWidth;
-
-            colHeights[col] += itemHeight + gap;
-
-            return { ...item, x, y, w: columnWidth, h: itemHeight };
-        });
-
-        return { grid: calculatedGrid, totalHeight: Math.max(...colHeights) };
-    }, [columns, items, width, gap]);
-
-    const hasMounted = useRef(false);
-
+    // 레이아웃 애니메이션 (GSAP)
     useLayoutEffect(() => {
         if (!imagesReady || grid.length === 0) return;
 
         grid.forEach((item, index) => {
             const selector = `[data-key="${item.id}"]`;
+
             if (!hasMounted.current) {
                 const start = getInitialPosition(item);
                 gsap.fromTo(
@@ -156,13 +146,11 @@ const Masonry: React.FC<MasonryProps> = ({
                     }
                 );
             } else {
-                gsap.to(selector, {
+                gsap.set(selector, {
                     x: item.x,
                     y: item.y,
                     width: item.w,
                     height: item.h,
-                    duration,
-                    ease,
                     overwrite: 'auto'
                 });
             }
@@ -171,19 +159,22 @@ const Masonry: React.FC<MasonryProps> = ({
         hasMounted.current = true;
     }, [grid, imagesReady]);
 
-    const handleMouseEnter = (element: HTMLElement) => {
-        const bgOverlay = element.querySelector('.bg-overlay') as HTMLElement;
-        const textContent = element.querySelector('.text-content') as HTMLElement;
-        if (bgOverlay) gsap.to(bgOverlay, { opacity: 1, duration: 0.2 });
-        if (textContent) gsap.fromTo(textContent, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 });
-    };
+    // 좋아요 클릭 이벤트
+    const handleLikeToggle = async (e: React.MouseEvent, postId: string) => {
+        e.stopPropagation();
 
-    const handleMouseLeave = (element: HTMLElement) => {
-        const bgOverlay = element.querySelector('.bg-overlay') as HTMLElement;
-        const textContent = element.querySelector('.text-content') as HTMLElement;
-        if (bgOverlay) gsap.to(bgOverlay, { opacity: 0, duration: 0.3 });
-        if (textContent) gsap.to(textContent, { y: 10, opacity: 0, duration: 0.3 });
-    };
+        try {
+            const response = await postLikeApi(postId);
+            if (response.code === 200 && response.message === "Success") {
+                const { isLiked, likeCount } = response.data;
+                setItemList(prev => prev.map(item =>
+                    item.id === postId ? { ...item, isLiked, likeCount } : item
+                ));
+            }
+        } catch (error) {
+            console.error("Like error:", error);
+        }
+    }
 
     return (
         <div
@@ -192,42 +183,11 @@ const Masonry: React.FC<MasonryProps> = ({
             style={{ height: totalHeight, minHeight: '400px' }}
         >
             {imagesReady && grid.map(item => (
-                <div
+                <MasonryItem
                     key={item.id}
-                    data-key={item.id}
-                    className="absolute overflow-hidden cursor-pointer"
-                    style={{ willChange: 'transform, width, height, opacity' }}
-                    onClick={() => navigate(`/post/${item.id}`)}
-                    onMouseEnter={e => handleMouseEnter(e.currentTarget)}
-                    onMouseLeave={e => handleMouseLeave(e.currentTarget)}
-                >
-                    <div
-                        className="relative w-full h-full bg-cover bg-center"
-                        style={{ backgroundImage: `url(${item.img})` }}
-                    >
-                        <div className="bg-overlay absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 flex flex-col justify-end p-12 text-white pointer-events-none">
-                            {/* 정보 영역 */}
-                            <div className="text-content opacity-0 flex items-end justify-between w-full">
-                                {/* 텍스트 영역 */}
-                                <div className="flex-1 min-w-0 pr-4">
-                                    <p className="text-base">
-                                        {item.location || '장소 정보 없음'}
-                                    </p>
-                                    <p className="text-xs mt-1 font-light">
-                                        {item.camera || '카메라 정보 없음'}
-                                    </p>
-                                </div>
-
-                                {/* 좋아요 버튼 영역 */}
-                                {/* <button onClick={(e) => e.stopPropagation()} className="pointer-events-auto p-2 transition-transform active:scale-90 hover:scale-110">
-                                <img src={`${item.isLiked ? "/images/ic_like_true.svg" : "/images/ic_like_false.svg"}`} alt='좋아요 버튼' className="w-4 h-4 object-contain" />
-                            </button> */}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            ))
-            }
+                    item={item}
+                    handleLikeToggle={handleLikeToggle} />
+            ))}
         </div >
     );
 };
