@@ -9,7 +9,7 @@ interface HeaderProps {
   myId?: number;
 }
 
-const Header: React.FC<HeaderProps> = ({ myId = 1 }) => {
+const Header: React.FC<HeaderProps> = ({ myId }) => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
