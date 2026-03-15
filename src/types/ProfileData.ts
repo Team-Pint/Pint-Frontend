@@ -58,6 +58,7 @@ export interface PostDetailApiResponse {
   };
   description: string;
   location: string;
+  camera: string;
   postImgUrl: string;
   isLiked: boolean;
   likeCount: number;

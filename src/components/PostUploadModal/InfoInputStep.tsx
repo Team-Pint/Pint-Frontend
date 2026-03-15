@@ -8,9 +8,10 @@ interface Props {
     setData: React.Dispatch<React.SetStateAction<PostUploadRequest>>;
     isLoading: boolean;
     handleUpload: () => void;
+    mode: 'upload' | 'edit';
 }
 
-const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload }) => {
+const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload, mode }) => {
 
     const { container, leftSection, imageSection, image, rightSection, inputSection, label, textInput, fileUploadSection, uploadIcon, fileName, removeBtn, removeIcon, textArea, submitBtn } = INFO_INPUT_STEP;
     const filterInputRef = useRef<HTMLInputElement>(null); // 프리셋 파일 변경 감지
@@ -51,6 +52,19 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
                         className={textInput}
                     />
                 </div>
+
+                {mode === 'edit' && (
+                    <div className={inputSection}>
+                    <label className={label}>카메라</label>
+                    <input
+                        type="text"
+                        placeholder="카메라를 입력하세요"
+                        value={(data as any).camera || ""}
+                        onChange={(e) => setData({ ...data, camera: e.target.value } as any)}
+                        className={textInput}
+                    />
+                </div>
+                )}
 
                 {/* 프리셋 파일 */}
                 <div className={inputSection}>
