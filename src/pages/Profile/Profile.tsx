@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import PostDetailModal from "./PostDetailModal";
 import { Pencil } from "lucide-react";
 import ProfileEditModal from "./ProfileEditModal";
 import type {
@@ -7,11 +6,11 @@ import type {
   ProfileUpdatePayload,
   PostSummary,
 } from "../../types/ProfileData";
-import type { PostDetail } from "../../types/ProfileData";
 import { cn } from "../../lib/utils";
 import { PROFILE_STYLES as styles } from "../../styles/profileStyles";
 import { fetchUserProfileData, updateProfileData } from "../../api/profileApi";
 import { useUserStore } from "../../store/useUserStore";
+import { useNavigate } from "react-router-dom";
 
 const formatUsernameLines = (rawName: string): string[] => {
   // 이름을 화면 폭에 맞게 1~2줄로 나눠 표시합니다.
@@ -78,7 +77,6 @@ type ProfileTab = "feed" | "likes";
 
 const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   const [profileData, setProfileData] = useState<ProfileResponse | null>(null);
-  const [selectedPost, setSelectedPost] = useState<PostDetail | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>("feed");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
@@ -87,6 +85,8 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   // API 요청 상태
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate();
 
   const {
     container,
@@ -191,7 +191,6 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   const displayCity = hasCity ? trimmedCity : cityPlaceholder;
   const locationTextValue = hasCity ? `FROM: ${displayCity}` : displayCity;
   const displayEmail = email?.trim();
-  const profileImageUrl = profileData.profileImageUrl ?? "";
   const usernameLines = formatUsernameLines(displayUsername);
   const isFeedTab = activeTab === "feed";
   const visiblePostList = isMe && !isFeedTab ? likedPostList : postList;
@@ -242,24 +241,16 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
     }
   };
 
-  const handleOpenPostDetail = (post: PostSummary, fromLikes: boolean) => {
-    setSelectedPost({
-      postId: post.postId,
-      imgUrl: post.imageUrl,
-      location: post.location ?? "",
-      camera: post.camera ?? "",
-      description: post.description ?? "",
-      username: displayUsername,
-      profileImage: profileImageUrl,
-      isWriter: fromLikes ? false : isMe,
-    });
+  // 게시글 상세 페이지 이동
+  const handleItemClick = (postId: number) => {
+    navigate(`/posts/${String(postId)}`);
   };
 
   return (
     <div
       className={cn(
         container,
-        !!selectedPost || isEditModalOpen ? "overflow-hidden h-screen" : "",
+        isEditModalOpen ? "overflow-hidden h-screen" : "",
       )}
     >
       <div className={wrapper}>
@@ -320,7 +311,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
                   <div
                     key={`${activeTab}-${post.postId}`}
                     className={gridItem}
-                    onClick={() => handleOpenPostDetail(post, isMe && !isFeedTab)}
+                    onClick={() => handleItemClick(post.postId)}
                   >
                     <img src={post.imageUrl} className={gridImage} alt="" />
                     <div className={gridOverlay} />
@@ -337,14 +328,6 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
           </div>
         </main>
       </div>
-
-      {/* 게시물 상세 모달 */}
-      {selectedPost && (
-        <PostDetailModal
-          post={selectedPost}
-          onClose={() => setSelectedPost(null)}
-        />
-      )}
 
       {/* 프로필 편집 모달 */}
       <ProfileEditModal

@@ -179,7 +179,7 @@ const Masonry: React.FC<MasonryProps> = ({
     }
 
     const handleItemClick = (id: string) => {
-        navigate(`/post/${id}`);
+        navigate(`/posts/${id}`);
     };
 
     return (
