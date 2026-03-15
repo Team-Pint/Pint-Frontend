@@ -11,6 +11,7 @@ import type { PostDetail } from "../../types/ProfileData";
 import { cn } from "../../lib/utils";
 import { PROFILE_STYLES as styles } from "../../styles/profileStyles";
 import { fetchUserProfileData, updateProfileData } from "../../api/profileApi";
+import { useUserStore } from "../../store/useUserStore";
 
 const formatUsernameLines = (rawName: string): string[] => {
   // 이름을 화면 폭에 맞게 1~2줄로 나눠 표시합니다.
@@ -81,6 +82,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>("feed");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const setGlobalProfileImage = useUserStore((state) => state.setProfileImageUrl);
 
   // API 요청 상태
   const [loading, setLoading] = useState(true);
@@ -201,7 +203,6 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
 
   const handleSaveProfile = async (updatedData: ProfileUpdateInput) => {
     if (!profileData) return;
-
     const payload = buildProfileUpdatePayload(updatedData);
 
     if (Object.keys(payload).length === 0) {
@@ -227,6 +228,11 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
       };
 
       setProfileData(mergedProfile);
+
+      if (mergedProfile.profileImageUrl) {
+        setGlobalProfileImage(mergedProfile.profileImageUrl);
+      }
+
       setIsEditModalOpen(false);
     } catch (err) {
       console.error("프로필 수정 실패:", err);
