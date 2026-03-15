@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Pencil } from "lucide-react";
-import ProfileEditModal from "./ProfileEditModal";
+import ProfileEditModal from "../../components/ProfileEditModal/ProfileEditModal";
 import type {
   ProfileResponse,
   ProfileUpdatePayload,
