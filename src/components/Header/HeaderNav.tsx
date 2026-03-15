@@ -6,10 +6,13 @@ import { cn } from '../../lib/utils';
 import { Header_NAV_STYLES } from '../../styles/headerNavStyles';
 import { signOut } from '../../api/authApi';
 import { headerApi } from '../../api/headerApi';
+import { useUserStore } from '../../store/useUserStore';
 
 const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [profileImage, setProfileImage] = useState("");
+  
+  const { profileImageUrl, setProfileImageUrl } = useUserStore();
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -28,14 +31,14 @@ const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
       try {
         const response = await headerApi();
         if (response.code === 200 || response.message === "Success") {
-          setProfileImage(response.data.profileImage);
+          setProfileImageUrl(response.data.profileImgUrl);
         }
       } catch (error) {
         console.error("프로필 로드 실패: ", error);
       }
     }
     fetchProfileImage();
-  }, [])
+  }, [setProfileImageUrl]);
 
   // 3. 드롭다운 외부 클릭 시 닫기 로직
   useEffect(() => {
@@ -81,8 +84,8 @@ const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
         className={cn(sharedAvatarStyle, avatarBtn)}
         onClick={() => setIsOpen(!isOpen)}
       >
-        {profileImage && profileImage.trim() !== "" ? (
-          <img src={profileImage} className={avatarImg} alt="프로필 이미지"/>
+        {profileImageUrl && profileImageUrl.trim() !== "" ? (
+          <img src={profileImageUrl} className={avatarImg} alt="프로필 이미지"/>
         ) :
           <User size={18} className={avatarPlaceholder} />
         }
