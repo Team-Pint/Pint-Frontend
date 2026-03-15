@@ -51,7 +51,9 @@ const PostUploadModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
             if (result.code === 200 || result.code === 201) {
                 alert("게시글 등록 완료!");
-                navigate('/profile/1');
+
+                const userId = localStorage.getItem("userId");
+                navigate(`/profile/${userId}`);
                 onClose();
             }
         } catch (error) {
