@@ -11,6 +11,7 @@ const Home = () => {
     
     const observerRef = useRef<HTMLDivElement | null>(null);
     const lastFetchedPage = useRef<number>(-1);
+    const loadingRef = useRef(false);
 
     useEffect(() => {
         if ('scrollRestoration' in window.history) {
@@ -20,12 +21,13 @@ const Home = () => {
     }, []);
 
     const fetchPosts = useCallback(async (currentPage: number) => {
-        if (loading || !hasNext || lastFetchedPage.current === currentPage) return;
+        if (loadingRef.current || lastFetchedPage.current >= currentPage) return;
 
+        loadingRef.current = true;
         setLoading(true);
         try {
             const data = await allPostApi(currentPage, 10);
-            
+
             setPosts(prev => {
                 const existingIds = new Set(prev.map(post => post.id));
                 const newPosts = data.postList.filter(post => !existingIds.has(post.id));
@@ -33,17 +35,20 @@ const Home = () => {
             });
 
             setHasNext(data.hasNext);
-            lastFetchedPage.current = currentPage;
         } catch (error) {
             console.error("데이터 로드 실패", error);
         } finally {
+            lastFetchedPage.current = currentPage;
+            loadingRef.current = false;
             setLoading(false);
         }
-    }, [loading, hasNext]);
+    }, []);
 
     useEffect(() => {
-        fetchPosts(page);
-    }, [page, fetchPosts]);
+        if (hasNext) {
+            fetchPosts(page);
+        }
+    }, [page, fetchPosts, hasNext]);
 
     // Intersection Observer 설정
     useEffect(() => {
