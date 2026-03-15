@@ -28,7 +28,7 @@ const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
       try {
         const response = await headerApi();
         if (response.code === 200 || response.message === "Success") {
-          setProfileImage(response.data.profileImage);
+          setProfileImage(response.data.profileImgUrl);
         }
       } catch (error) {
         console.error("프로필 로드 실패: ", error);
