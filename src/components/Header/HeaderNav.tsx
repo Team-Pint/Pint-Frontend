@@ -27,6 +27,8 @@ const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
   const { avatar: sharedAvatarStyle } = HEADER_STYLES;
 
   useEffect(() => {
+    if (profileImageUrl) return;
+
     const fetchProfileImage = async () => {
       try {
         const response = await headerApi();
@@ -38,7 +40,7 @@ const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
       }
     }
     fetchProfileImage();
-  }, [setProfileImageUrl]);
+  }, [profileImageUrl, setProfileImageUrl]);
 
   // 3. 드롭다운 외부 클릭 시 닫기 로직
   useEffect(() => {
