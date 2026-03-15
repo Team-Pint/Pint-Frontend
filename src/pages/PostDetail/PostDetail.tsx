@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, Info, Pencil, Trash2, User } from 'lucide-react';
+import { ArrowLeft, Heart, Info, Pencil, Trash2 } from 'lucide-react';
 import { deletePostApi, fetchPostDetailData } from '../../api/postApi';
 import type { PostDetailApiResponse } from '../../types/ProfileData';
 import { POST_DETAIL_STYLES as styles } from '../../styles/postDetailStyles';
