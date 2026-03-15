@@ -78,6 +78,7 @@ const Home = () => {
         isLiked: post.isLiked,
         likeCount: post.likeCount,
         username: post.userInfo.username,
+        userId: post.userInfo.userId,
         profileUrl: post.userInfo.profileImage
     })), [posts]);
 

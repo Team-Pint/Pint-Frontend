@@ -46,6 +46,7 @@ interface Item {
     likeCount: number;
     isLiked: boolean;
     username: string;
+    userId: number;
     profileUrl: string;
 }
 
@@ -178,6 +179,13 @@ const Masonry: React.FC<MasonryProps> = ({
         }
     }
 
+    // 프로필 이동 이벤트
+    const handleProfile = async (e: React.MouseEvent, userId: string) => {
+        e.stopPropagation();
+
+        navigate(`/profile/${userId}`);
+    }
+
     const handleItemClick = (id: string) => {
         navigate(`/posts/${id}`);
     };
@@ -193,6 +201,7 @@ const Masonry: React.FC<MasonryProps> = ({
                     key={item.id}
                     item={item}
                     handleLikeToggle={handleLikeToggle}
+                    handleProfile={handleProfile}
                     onItemClick={() => handleItemClick(item.id)} />
             ))}
         </div >
