@@ -119,9 +119,7 @@ const PostDetail = () => {
                       alt={userInfo.username}
                     />
                   ) : (
-                    <div className={`${styles.userAvatar} flex items-center justify-center`}>
-                      <User size={20} className="text-gray-400" />
-                    </div>
+                    <img src="/images/ic_default_profile.svg" className={styles.userAvatar} alt="프로필 이미지" />
                   )}
                   <span className={styles.userName}>{userInfo.username}</span>
                 </div>

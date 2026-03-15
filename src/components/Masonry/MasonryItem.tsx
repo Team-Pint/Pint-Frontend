@@ -62,7 +62,11 @@ const MasonryItem: React.FC<MasonryItemProps> = ({ item, handleLikeToggle, handl
                     {/* 하단 영역 (유저 정보, 좋아요) */}
                     <div className="bottom-info opacity-0 flex justify-between items-center">
                         <div className="flex items-center gap-2.5 pointer-events-auto" onClick={(e) => handleProfile(e, item.userId)}>
-                            <img src={item.profileUrl} alt="" className="w-8 h-8 rounded-full object-cover" />
+                            {item.profileUrl && item.profileUrl.trim() !== "" ? (
+                                <img src={item.profileUrl} alt="" className="w-8 h-8 rounded-full object-cover" />
+                            ) :
+                                <img src="/images/ic_default_profile.svg" className="w-8 h-8 rounded-full object-cover bg-white" alt="프로필 이미지" />
+                            }
                             <span className="text-sm font-medium">{item.username}</span>
                         </div>
                         <button

@@ -20,7 +20,7 @@ const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
   const {
     container, avatarBtn, avatarImg, dropdownCard,
     menuList, menuItem, menuDivider, logoutText,
-    iconDefault, avatarPlaceholder
+    iconDefault
   } = Header_NAV_STYLES;
 
   // 2. 공통 아바타 스타일 및 스토어 데이터 추출
@@ -87,7 +87,7 @@ const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
         {profileImageUrl && profileImageUrl.trim() !== "" ? (
           <img src={profileImageUrl} className={avatarImg} alt="프로필 이미지"/>
         ) :
-          <User size={18} className={avatarPlaceholder} />
+          <img src="/images/ic_default_profile.svg" className={avatarImg} alt="프로필 이미지" />
         }
       </div>
 
