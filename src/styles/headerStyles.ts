@@ -11,7 +11,6 @@ export const HEADER_STYLES = {
   dropdownContainer: "absolute top-[120%] left-0 w-full bg-white rounded-xl shadow-xl py-2 z-[1000] max-h-[320px] overflow-y-auto border border-gray-100",
   dropdownItem: "flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors",
   dropdownImage: "w-9 h-9 rounded-full object-cover bg-gray-100",
-  dropdownPlaceholder: "w-9 h-9 rounded-full bg-gray-200",
   dropdownText: "text-[14px] font-medium text-gray-800",
   dropdownMessage: "p-6 text-center text-[13px] text-gray-400 font-light"
 };

@@ -33,7 +33,6 @@ const Header: React.FC<HeaderProps> = ({ myId }) => {
     dropdownContainer,
     dropdownItem,
     dropdownImage,
-    dropdownPlaceholder,
     dropdownText,
     dropdownMessage
   } = HEADER_STYLES;
@@ -111,7 +110,7 @@ const Header: React.FC<HeaderProps> = ({ myId }) => {
                       {user.profileImage ? (
                         <img src={user.profileImage} alt={user.username} className={dropdownImage} />
                       ) : (
-                        <div className={dropdownPlaceholder} />
+                        <img src="/images/ic_default_profile.svg" alt={user.username} className={dropdownImage} />
                       )}
 
                       <span className={dropdownText}>{user.username}</span>
