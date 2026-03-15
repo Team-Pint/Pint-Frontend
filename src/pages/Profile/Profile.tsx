@@ -313,7 +313,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
                     className={gridItem}
                     onClick={() => handleItemClick(post.postId)}
                   >
-                    <img src={post.imageUrl} className={gridImage} alt="" />
+                    <img src={post.imageUrl} className={gridImage} alt="" loading="lazy" />
                     <div className={gridOverlay} />
                   </div>
                 ))

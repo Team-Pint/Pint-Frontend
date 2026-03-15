@@ -42,10 +42,14 @@ const MasonryItem: React.FC<MasonryItemProps> = ({ item, handleLikeToggle, handl
             onMouseLeave={handleMouseLeave}
             onClick={onItemClick}
         >
-            <div
-                className="relative w-full h-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${item.img})` }}
-            >
+            <div className="relative w-full h-full">
+                <img 
+                    src={item.img} 
+                    alt=""
+                    loading="lazy" 
+                    className="w-full h-full object-cover" 
+                />
+
                 {/* 검정 배경 그라데이션 */}
                 <div className="top-overlay absolute inset-0 opacity-0 pointer-events-none"
                     style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 50%)' }} />
