@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Heart, Info, Pencil, Trash2, User } from 'lucide-react';
-import { fetchPostDetailData } from '../../api/postApi';
+import { deletePostApi, fetchPostDetailData } from '../../api/postApi';
 import type { PostDetailApiResponse } from '../../types/ProfileData';
 import { POST_DETAIL_STYLES as styles } from '../../styles/postDetailStyles';
 import MoreInfoModal from '../../components/MoreInfoModal/MoreInfoModal';
@@ -46,6 +46,26 @@ const PostDetail = () => {
     }
     } catch (error) {
       console.error("좋아요 처리 실패:", error);
+    }
+  };
+
+  // 게시글 삭제
+  const handleDeleteClick = async () => {
+    if (!postId) return;
+
+    if (!window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+      return;
+    }
+
+    try {
+      const response = await deletePostApi(Number(postId));
+
+      if (response.code === 200) {
+        alert("게시글이 삭제되었습니다.");
+        navigate(-1);
+      }
+    } catch (error) {
+      console.error("게시글 삭제 실패:", error);
     }
   };
 
@@ -129,7 +149,7 @@ const PostDetail = () => {
                     <button className={styles.moreBtn}>
                       <Pencil size={14} strokeWidth={1.5} /> Edit
                     </button>
-                    <button className={styles.moreBtnDanger}>
+                    <button className={styles.moreBtnDanger} onClick={handleDeleteClick}>
                       <Trash2 size={14} strokeWidth={1.5} /> Delete
                     </button>
                   </>
