@@ -90,6 +90,7 @@ const PostUploadModal: React.FC<Props> = ({ isOpen, onClose }) => {
                             setData={setData}
                             isLoading={isLoading}
                             handleUpload={handleUpload}
+                            mode="upload"
                         />
                     )}
                 </div>

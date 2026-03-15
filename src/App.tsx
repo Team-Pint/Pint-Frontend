@@ -25,7 +25,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path='/home' element={<Home />} />
-        <Route path="/post/:postId" element={<PostDetail />} />
+        <Route path="/posts/:postId" element={<PostDetail />} />
         <Route path="/profile/:userId" element={<ProfileRouteWrapper />} />
       </Routes>
     </>
