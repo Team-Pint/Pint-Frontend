@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AUTH_STYLES } from '../../styles/authStyles';
 import { signIn, signUp, checkEmail } from '../../api/authApi';
@@ -39,6 +39,13 @@ const Login: React.FC = () => {
     container, leftSection, logo, formWrapper, inputGroup,
     label, input, button, toggleText, rightSection, column
   } = AUTH_STYLES;
+
+  useEffect(() => {
+    const isUserLoggedIn = localStorage.getItem('userId');
+    if (isUserLoggedIn) {
+      navigate('/home', { replace: true });
+    }
+  }, [navigate]);
 
   // 입력값 유효성 검사
   const isFormValid = useMemo(() => {
@@ -84,12 +91,12 @@ const Login: React.FC = () => {
           const userId = res.data.userid ?? res.data.userId;
 
           // 이후 요청을 위해 저장 (메모리나 보안 스토리지 권장)
-//           sessionStorage.setItem('csrfToken', csrfToken);
+          //           sessionStorage.setItem('csrfToken', csrfToken);
           if (userId !== undefined && userId !== null) {
             localStorage.setItem('userId', String(userId));
           }
           alert("로그인 성공!");
-          navigate('/home');
+          navigate('/home', { replace: true });
         } else {
           alert("로그인 실패");
         }

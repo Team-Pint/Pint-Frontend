@@ -71,7 +71,7 @@ const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
       sessionStorage.clear();
 
       alert("로그아웃 성공");
-      navigate('/login');
+      window.location.replace('/login');
     } catch (error) {
       console.error("통신 실패: ", error);
     }
