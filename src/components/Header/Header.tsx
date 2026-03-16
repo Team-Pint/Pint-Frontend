@@ -18,6 +18,7 @@ const Header: React.FC<HeaderProps> = ({ myId }) => {
   const [keyword, setKeyword] = useState('');
   const [userList, setUserList] = useState<SearchUser[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -85,16 +86,27 @@ const Header: React.FC<HeaderProps> = ({ myId }) => {
         <div className={leftSection}>
           <h1 className={logo} onClick={handleLogoClick}>Pint.</h1>
 
-          <div className={searchWrapper} ref={dropdownRef} style={{ position: 'relative' }}>
+          <div className={`${searchWrapper} border-b-0`} ref={dropdownRef}>
             <input
               type="text"
               placeholder="Search"
               className={searchInput}
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
-              onFocus={() => keyword && setIsDropdownOpen(true)}
+              onFocus={() => {
+                setIsFocused(true);
+                if (keyword) setIsDropdownOpen(true);
+              }}
+              onBlur={() => setIsFocused(false)}
             />
-            <Search size={14} />
+            <Search size={16} />
+
+            <div 
+              className={`absolute bottom-0 left-0 h-[1.5px] bg-black transition-all duration-300 ease-in-out
+                ${isFocused ? 'w-full' : 'w-0'}`} 
+            />
+            
+            <div className="absolute bottom-0 left-0 h-[1.5px] w-full bg-black/10 -z-10" />
 
             {isDropdownOpen && (
               <div className={dropdownContainer}>
