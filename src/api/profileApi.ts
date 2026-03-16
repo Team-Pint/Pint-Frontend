@@ -37,7 +37,7 @@ export const fetchUserProfileData = async (
 export const updateProfileData = async (
   userId: number,
   userData: ProfileUpdatePayload,
-): Promise<ProfileResponse> => {
+): Promise<ProfileResponse | null> => {
   const formData = new FormData();
 
   if (userData.username !== undefined) {
@@ -63,5 +63,6 @@ export const updateProfileData = async (
     return normalizeProfileResponse(payload.data);
   }
 
-  return normalizeProfileResponse(response.data as ProfileResponse);
+  // Server returned no profile data — return null so caller knows
+  return null;
 };

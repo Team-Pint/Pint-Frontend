@@ -203,32 +203,35 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
       return;
     }
 
+    const prevProfileData = profileData;
+    const prevGlobalImage = useUserStore.getState().profileImageUrl;
+
     try {
       setIsSavingProfile(true);
       const updatedProfile = await updateProfileData(userId, payload);
-      const serializedPayload = { ...payload };
 
-      const {
-        profileImage: _ignoredProfileImage,
-        ...profileTextPayload
-      } = serializedPayload;
-      void _ignoredProfileImage;
+      if (updatedProfile) {
+        // Server returned full profile — merge safely
+        const mergedProfile: ProfileResponse = {
+          ...profileData,
+          ...updatedProfile,
+        };
 
-      const mergedProfile: ProfileResponse = {
-        ...profileData,
-        ...updatedProfile,
-        ...profileTextPayload,
-      };
+        setProfileData(mergedProfile);
 
-      setProfileData(mergedProfile);
-
-      if (mergedProfile.profileImageUrl) {
-        setGlobalProfileImage(mergedProfile.profileImageUrl);
+        if (mergedProfile.profileImageUrl) {
+          setGlobalProfileImage(mergedProfile.profileImageUrl);
+        }
+      } else {
+        // Server returned no profile data — refetch to get authoritative state
+        await fetchProfile(true);
       }
 
       setIsEditModalOpen(false);
     } catch (err) {
       console.error("프로필 수정 실패:", err);
+      setProfileData(prevProfileData);
+      setGlobalProfileImage(prevGlobalImage);
       alert("프로필 수정에 실패했습니다.");
     } finally {
       setIsSavingProfile(false);

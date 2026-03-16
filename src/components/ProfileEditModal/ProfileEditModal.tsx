@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Camera, User } from "lucide-react";
 import { MODAL_STYLES } from "../../styles/profileStyles";
 import type { ProfileResponse } from "../../types/ProfileData";
@@ -46,12 +46,24 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
   const { username, city, introduction } = tempData;
   const hasProfileImage = Boolean(previewImageUrl?.trim());
 
+  // blob URL cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (previewImageUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(previewImageUrl);
+      }
+    };
+  }, [previewImageUrl]);
+
   if (!isOpen) return null;
 
   // 이미지 변경 핸들러
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (previewImageUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(previewImageUrl);
+      }
       const imageUrl = URL.createObjectURL(file);
       setTempImageFile(file);
       setPreviewImageUrl(imageUrl);

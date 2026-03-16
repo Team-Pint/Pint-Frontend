@@ -1,17 +1,15 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: '/api',
   withCredentials: true,
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
 });
 
-api.interceptors.request.use((config) => {
-  const csrfToken = localStorage.getItem("csrfToken");
-  if (csrfToken) {
-    config.headers["X-XSRF-TOKEN"] = String(csrfToken);
-  }
-  return config;
-});
+export const fetchCsrfToken = async () => {
+  await api.get('/csrf-token');
+};
 
 api.interceptors.response.use(
   (response) => response,

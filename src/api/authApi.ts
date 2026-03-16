@@ -1,18 +1,17 @@
-import api from "./apiClient";
+import api from './apiClient';
+// import { fetchCsrfToken } from './apiClient';
 
 // 회원가입
-export const signUp = async (data: {
-  email: string;
-  password: string;
-  username: string;
-}) => {
-  const response = await api.post("/auth/signup", data);
+export const signUp = async (data: { email: string; password: string; username: string }) => {
+  await fetchCsrfToken();
+  const response = await api.post('/auth/signup', data);
   return response.data;
 };
 
 // 로그인
 export const signIn = async (data: { email: string; password: string }) => {
-  const response = await api.post("/auth/login", data);
+  await fetchCsrfToken();
+  const response = await api.post('/auth/login', data);
   return response.data;
 };
 
