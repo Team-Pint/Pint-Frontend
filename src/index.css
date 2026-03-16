@@ -3,3 +3,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 하트 클릭 시 커지는 애니메이션 */
+@keyframes heart-bounce {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.2); }
+  30% { transform: scale(0.95); }
+  45% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* 트위터식 링 확장 애니메이션 */
+@keyframes heart-ring {
+  0% { transform: scale(0); opacity: 1; border-width: 4px; }
+  50% { opacity: 1; border-width: 2px; }
+  100% { transform: scale(2.5); opacity: 0; border-width: 0px; }
+}
+
+.heart-active {
+  animation: heart-bounce 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.heart-ring-effect {
+  position: absolute;
+  width: 20px; /* 아이콘 크기와 맞춤 */
+  height: 20px;
+  border: 2px solid #E2264D;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: heart-ring 0.5s ease-out forwards;
+  z-index: 0;
+}
