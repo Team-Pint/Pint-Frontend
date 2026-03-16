@@ -35,7 +35,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
     content,
     closeBtn,
     profileImgWrapper,
-    profileImg: profileImgStyle,
+    profileImg,
     profileImgFallback,
     cameraBtn,
     input,
@@ -77,7 +77,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
           {hasProfileImage ? (
             <img
               src={previewImageUrl}
-              className={profileImgStyle}
+              className={profileImg}
               alt="Profile Preview"
             />
           ) : (

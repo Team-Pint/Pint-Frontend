@@ -16,6 +16,8 @@ const PostDetail = () => {
   const [isMoreInfoOpen, setIsMoreInfoOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+
+
   // 포스트 정보 API
   const fetchPost = async () => {
     if (!postId) return;
@@ -32,6 +34,8 @@ const PostDetail = () => {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+    
     fetchPost();
   }, [postId]);
 

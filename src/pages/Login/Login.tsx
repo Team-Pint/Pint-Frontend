@@ -152,9 +152,9 @@ const Login: React.FC = () => {
               <button
                 type="button"
                 onClick={handleCheckEmail}
-                className={`absolute right-0 bottom-2 text-[10px] bg-white text-black px-4 py-1 rounded-full border border-black transition-all duration-300
+                className={`absolute right-0 bottom-2 text-[10px] px-4 py-1 rounded-full border transition-all duration-300
                   ${isLogin ? 'opacity-0 pointer-events-none' : 'opacity-100'} 
-                  ${isEmailChecked ? 'bg-green-500 text-white border-green-500' : 'bg-white text-black border-white hover:bg-black hover:text-white'}`}>
+                  ${isEmailChecked ? 'bg-green-500 text-white border-green-500 pointer-events-none' : 'bg-white text-black border-white hover:bg-black hover:text-white'}`}>
                 {isEmailChecked ? "Verified" : "Check Availability"}
               </button>
             </div>

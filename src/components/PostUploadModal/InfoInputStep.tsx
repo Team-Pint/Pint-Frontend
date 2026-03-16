@@ -28,7 +28,7 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
         setData(prev => ({ ...prev, filter: null }));
     }
 
-    const isSubmitDisabled = !data.location || !data.description || isLoading;
+    const isSubmitDisabled = !data.location || !data.description || data.description.length < 10 || isLoading;
 
     return (
         <div className={container}>
@@ -43,7 +43,9 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
             <div className={rightSection}>
                 {/* 장소 */}
                 <div className={inputSection}>
-                    <label className={label}>장소</label>
+                    <label className={label}>
+                        장소 <span className="text-red-500 ml-0.5">•</span>
+                    </label>
                     <input
                         type="text"
                         placeholder="사진을 찍은 장소를 입력하세요"
@@ -103,9 +105,11 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
 
                 {/* 설명 */}
                 <div className="flex flex-col space-y-2">
-                    <label className={label}>설명</label>
+                    <label className={label}>
+                        설명 <span className="text-red-500 ml-0.5">•</span>
+                    </label>
                     <textarea
-                        placeholder="사진에 대한 설명을 입력하세요"
+                        placeholder="사진에 대한 설명을 입력하세요 (최소 10글자 이상)"
                         className={textArea}
                         value={data.description}
                         onChange={(e) => setData({ ...data, description: e.target.value })} />
@@ -117,7 +121,7 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
                     disabled={isSubmitDisabled}
                     className={submitBtn}
                 >
-                    {isLoading ? "Uploading..." : "Upload"}
+                    {isLoading ? (mode === 'upload' ? "Uploading..." : "Saving...") : (mode === 'upload' ? "Upload" : "Edit")}
                 </button>
             </div>
         </div>
