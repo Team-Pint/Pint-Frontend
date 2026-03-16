@@ -1,7 +1,7 @@
 export const AUTH_STYLES = {
   container: "flex h-screen w-full overflow-hidden bg-white",
   leftSection: "w-[450px] h-full bg-black text-white flex flex-col justify-center px-16 z-20 shadow-2xl",
-  logo: "text-[36px] font-black font-serif italic mb-16",
+  logo: "text-[36px] font-playfair font-semibold mb-16",
   
   formWrapper: "w-full space-y-5", 
   

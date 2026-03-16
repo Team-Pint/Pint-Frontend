@@ -38,26 +38,26 @@ export const PROFILE_STYLES = {
     "min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white",
   wrapper: "max-w-[1800px] mx-auto p-28",
   loadingState:
-    "p-20 font-serif text-center uppercase tracking-widest text-gray-200",
+    "p-20 text-center uppercase tracking-widest text-gray-200",
 
   // Profile Section
-  profileSection: "flex justify-between items-end mb-16 px-2 relative",
+  profileSection: "flex justify-between items-end mb-32 px-2 relative",
   nameWrapper:
-    "flex flex-col items-start text-[clamp(46px,4.8vw,78px)] font-serif leading-[1.08] font-medium",
+    "flex flex-col items-start text-[clamp(46px,4.8vw,78px)] leading-[1.08] font-playfair",
   nameItem: "ml-6 block",
   infoWrapper: "max-w-lg text-right flex flex-col items-end pb-1 mr-6",
   editBtn:
     "flex items-center gap-2 px-4 py-1.5 bg-black rounded-full text-[16px] text-white mb-6 hover:bg-black/70 hover:text-white transition",
   descriptionText:
     "text-[18px] mb-16 text-right font-light max-w-[560px] text-black leading-[1.35]",
-  locationText: "font-serif text-[22px] mb-0 uppercase leading-[1.1]",
-  emailText: "text-[16px] font-light mt-3",
+  locationText: "font-playfair text-[22px] mb-0 uppercase leading-[1.1]",
+  emailText: "text-[16px] font-playfair mt-3",
 
   // Feed / Likes Section
   feedLikesSection: "mt-14",
   feedLikesHeader: "grid grid-cols-2 mb-8",
   feedLikesTab:
-    "w-full pb-3 text-center text-[20px] leading-none tracking-tight font-serif transition-colors md:text-[24px]",
+    "w-full pb-4 font-playfair text-center text-xl leading-none tracking-tight transition-colors",
   feedLikesTabActive: "border-b-2 border-black text-black",
   feedLikesTabIdle: "border-b border-black/20 text-black/55 hover:text-black",
 
