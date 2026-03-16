@@ -258,7 +258,7 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
           <section className={profileSection}>
             <div className={nameWrapper}>
               {usernameLines.map((name, i) => (
-                <span key={i} className={nameItem}>
+                <span key={i} className={cn(nameItem, "text-[130px]")}>
                   {name}
                 </span>
               ))}

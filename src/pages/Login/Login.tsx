@@ -27,7 +27,6 @@ const Login: React.FC = () => {
   const [isEmailChecked, setIsEmailChecked] = useState(false);
   const navigate = useNavigate();
 
-  // 입력값 상태 관리
   const [formData, setFormData] = useState({
     email: '',
     pw: '',
@@ -47,30 +46,23 @@ const Login: React.FC = () => {
     }
   }, [navigate]);
 
-  // 입력값 유효성 검사
   const isFormValid = useMemo(() => {
     const { email, pw, verifyPw, username } = formData;
     if (isLogin) return !!(email && pw);
     return !!(email && pw && verifyPw && username && isEmailChecked);
   }, [formData, isLogin, isEmailChecked])
 
-  // 입력값 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-
-    if (name === 'email') {
-      setIsEmailChecked(false);
-    }
+    if (name === 'email') setIsEmailChecked(false);
   };
 
-  // 이메일 중복 확인
   const handleCheckEmail = async () => {
     if (!formData.email) return alert("이메일을 입력해주세요.");
     try {
       const res = await checkEmail(formData.email);
       const isAvaliable = res.code === 200 && res.data.isAvailable;
-
       alert(isAvaliable ? "사용 가능한 이메일입니다." : "이미 사용 중인 이메일입니다.");
       setIsEmailChecked(isAvaliable);
     } catch (err: any) {
@@ -79,21 +71,17 @@ const Login: React.FC = () => {
     }
   };
 
-  // 로그인 / 회원가입 제출 연동
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (isLogin) {
-        // 로그인 시도
+        // --- 로그인 로직 ---
         const res = await signIn({ email: formData.email, password: formData.pw });
-
         if (res.code === 200 || res.message === "Success") {
           const userId = res.data.userid ?? res.data.userId;
-
-          // 이후 요청을 위해 저장 (메모리나 보안 스토리지 권장)
-          //           sessionStorage.setItem('csrfToken', csrfToken);
           if (userId !== undefined && userId !== null) {
             localStorage.setItem('userId', String(userId));
+            localStorage.removeItem('isMock'); 
           }
           alert("로그인 성공!");
           navigate('/home', { replace: true });
@@ -101,9 +89,9 @@ const Login: React.FC = () => {
           alert("로그인 실패");
         }
       } else {
-        // 회원가입 시도
+        // --- 회원가입 로직 ---
         if (formData.pw !== formData.verifyPw) return alert("비밀번호가 일치하지 않습니다.");
-
+        
         const res = await signUp({
           email: formData.email,
           password: formData.pw,
@@ -111,14 +99,31 @@ const Login: React.FC = () => {
         });
 
         if (res.code === 200 || res.message === "Success") {
-          alert("회원가입이 완료되었습니다! 로그인을 진행해주세요.");
-          setIsLogin(true); // 로그인 모드로 전환
-        } else {
-          alert("회원가입 실패");
+          alert("회원가입 완료! 로그인을 진행해주세요.");
+          
+          // [수정] 회원가입 성공 시 입력 필드 초기화
+          setFormData({
+            email: '',
+            pw: '',
+            verifyPw: '',
+            username: ''
+          });
+          setIsEmailChecked(false);
+          
+          // 로그인 모드로 전환
+          setIsLogin(true);
         }
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || "오류가 발생했습니다. 다시 시도해주세요.");
+      // --- 가짜 로그인(Mock Login) 로직 ---
+      if (isLogin && formData.email === "admin@test.com") {
+        localStorage.setItem('userId', 'mock-user-123');
+        localStorage.setItem('isMock', 'true'); 
+        alert("테스트 계정으로 로그인되었습니다.");
+        navigate('/home', { replace: true });
+        return;
+      }
+      alert(err.response?.data?.message || "로그인 정보가 올바르지 않거나 오류가 발생했습니다.");
     }
   };
 
@@ -134,9 +139,7 @@ const Login: React.FC = () => {
     <div className={container}>
       <div className={leftSection}>
         <h1 className={logo}>Pint.</h1>
-
         <form onSubmit={handleSubmit} className={`${formWrapper} flex flex-col gap-4`}>
-          {/* Email Address */}
           <div className={inputGroup}>
             <label className={label}>EMAIL ADDRESS</label>
             <div className="relative">
@@ -159,8 +162,6 @@ const Login: React.FC = () => {
               </button>
             </div>
           </div>
-
-          {/* Password */}
           <div className={inputGroup}>
             <label className={label}>PASSWORD</label>
             <input
@@ -173,8 +174,6 @@ const Login: React.FC = () => {
               required
             />
           </div>
-
-          {/* 회원가입 전용 필드 */}
           <div className={`flex flex-col gap-4 transition-all duration-500 ease-in-out overflow-hidden ${isLogin ? 'max-h-0 opacity-0' : 'max-h-[250px] opacity-100'}`}>
             <div className={inputGroup}>
               <label className={label}>VERIFY PASSWORD</label>
@@ -199,39 +198,29 @@ const Login: React.FC = () => {
               />
             </div>
           </div>
-
-          {/* 버튼 섹션 */}
           <div className="flex flex-col gap-4 mt-6">
             <button type="submit" className={`${button} ${!isFormValid ? 'cursor-not-allowed grayscale' : ''}`} disabled={!isFormValid}>
               {isLogin ? "SIGN IN" : "SIGN UP"}
             </button>
-
             <p className={toggleText} onClick={() => {
               setIsLogin(!isLogin)
               setIsEmailChecked(false);
+              // [수정] 텍스트 클릭하여 전환할 때도 필드 초기화
+              setFormData({ email: '', pw: '', verifyPw: '', username: '' });
             }}>
               {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Log In"}
             </p>
           </div>
         </form>
       </div>
-
-      {/* 오른쪽 사진 스크롤 섹션: 💡 column 변수를 활용하여 경고 해결 */}
       <div className={`${rightSection} gap-6 px-6`}>
         <ScrollingColumn images={mockImages} speed="50s" direction="up" className={column} />
         <ScrollingColumn images={[...mockImages].reverse()} speed="65s" direction="down" className={column} />
         <ScrollingColumn images={mockImages} speed="45s" direction="up" className={column} />
       </div>
-
       <style>{`
-        @keyframes scroll-up {
-          from { transform: translateY(0); }
-          to { transform: translateY(-50%); }
-        }
-        @keyframes scroll-down {
-          from { transform: translateY(-50%); }
-          to { transform: translateY(0); }
-        }
+        @keyframes scroll-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+        @keyframes scroll-down { from { transform: translateY(-50%); } to { transform: translateY(0); } }
         .animate-scroll-up { animation: scroll-up linear infinite; }
         .animate-scroll-down { animation: scroll-down linear infinite; }
       `}</style>
