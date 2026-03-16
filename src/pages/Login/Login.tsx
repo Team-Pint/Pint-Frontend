@@ -6,9 +6,7 @@ import {
   signUp,
   checkEmail,
   getLoginImages,
-  // fetchCsrfToken,
 } from "../../api/authApi";
-// import api from "../../api/apiClient";
 
 // 스크롤 이미지 컬럼 컴포넌트
 const ScrollingColumn = ({
@@ -140,15 +138,7 @@ const Login: React.FC = () => {
           if (userId !== undefined && userId !== null)
             localStorage.setItem("userId", String(userId));
           alert("로그인 성공!");
-
-          // 로그인 성공 시, CSRF 토큰 가져오기
-          // const csrfToken = await fetchCsrfToken();
-          // if (csrfToken) {
-          //   localStorage.setItem("csrfToken", String(csrfToken));
-          // }
-
-          // api.defaults.headers.common["X-XSRF-TOKEN"] = String(csrfToken);
-
+          
           navigate("/home", { replace: true });
         }
       } else {

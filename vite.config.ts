@@ -1,11 +1,10 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 // 1. Tailwind CSS 플러그인 임포트
 //import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd());
+export default defineConfig(() => {
   return {
     plugins: [
       react(),
@@ -15,7 +14,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: env.VITE_API_BACKEND || 'http://localhost:8080',
+          target: 'https://pintpint.duckdns.org',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
