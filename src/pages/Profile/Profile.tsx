@@ -330,13 +330,15 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
       </div>
 
       {/* 프로필 편집 모달 */}
-      <ProfileEditModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        data={modalProfileData}
-        onSave={handleSaveProfile}
-        isSaving={isSavingProfile}
-      />
+      {isEditModalOpen && (
+        <ProfileEditModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          data={modalProfileData}
+          onSave={handleSaveProfile}
+          isSaving={isSavingProfile}
+        />
+      )}
     </div>
   );
 };

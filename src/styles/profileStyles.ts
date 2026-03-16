@@ -76,18 +76,13 @@ export const PROFILE_STYLES = {
 export const MODAL_STYLES = {
   overlay:
     "fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4",
-
-  // ✅ 수정 후: 직사각형 비율 + 각진 모서리 반영
   content:
     "bg-white rounded-xl w-full max-w-[420px] p-10 flex flex-col items-center relative shadow-2xl transition-all duration-300",
-  // 기존: max-w-[480px] (더 넓었음), rounded-[40px] (매우 둥글었음)
-  // 변경: max-w-[420px] (더 좁고 길게), rounded-3xl (각진 느낌)
-
   closeBtn:
     "absolute top-8 right-8 text-gray-400 hover:text-black transition-colors",
   profileImgWrapper: "relative mb-10",
   profileImg:
-    "w-32 h-32 rounded-full object-contain bg-gray-100 border-4 border-white",
+    "w-32 h-32 rounded-full object-cover bg-gray-100 border-4 border-white",
   profileImgFallback:
     "w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center text-gray-400",
   cameraBtn:
