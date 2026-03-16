@@ -7,7 +7,7 @@ export const AUTH_STYLES = {
   
   inputGroup: "flex flex-col gap-1.5", 
   
-  label: "text-[10px] text-gray-500 font-bold uppercase",
+  label: "text-[10px] text-gray-400 font-bold uppercase",
   
   // 기본 입력창 스타일 (글자색 흰색 명시)
   input: "bg-transparent border-b border-white/20 py-2 outline-none focus:border-white transition-all text-xs font-light w-full text-white",

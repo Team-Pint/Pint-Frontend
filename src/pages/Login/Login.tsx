@@ -219,6 +219,16 @@ const Login: React.FC = () => {
         @keyframes scroll-down { from { transform: translateY(-50%); } to { transform: translateY(0); } }
         .animate-scroll-up { animation: scroll-up linear infinite; }
         .animate-scroll-down { animation: scroll-down linear infinite; }
+
+        input::placeholder {
+          -webkit-text-fill-color: rgba(255, 255, 255, 0.5) !important;
+          color: rgba(255, 255, 255, 0.3) !important;
+          opacity: 1;
+        }
+
+        input::-webkit-input-placeholder {
+          -webkit-text-fill-color: rgba(255, 255, 255, 0.5) !important;
+        }
       `}</style>
     </div>
   );
