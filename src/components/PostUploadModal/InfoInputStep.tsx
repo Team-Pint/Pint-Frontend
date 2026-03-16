@@ -48,7 +48,7 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
                     </label>
                     <input
                         type="text"
-                        placeholder="사진을 찍은 장소를 입력하세요"
+                        placeholder="사진을 찍은 장소를 자세히 입력하세요"
                         value={data.location}
                         onChange={(e) => setData({ ...data, location: e.target.value })}
                         className={textInput}

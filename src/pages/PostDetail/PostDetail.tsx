@@ -7,6 +7,7 @@ import { POST_DETAIL_STYLES as styles } from '../../styles/postDetailStyles';
 import MoreInfoModal from '../../components/MoreInfoModal/MoreInfoModal';
 import { postLikeApi } from '../../api/postLikeApi';
 import PostEditModal from '../../components/PostEditModal/PostEditModal';
+import confetti from 'canvas-confetti'; // [추가] 라이브러리 임포트
 
 const PostDetail = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -24,7 +25,6 @@ const PostDetail = () => {
 
     try {
       const data = await fetchPostDetailData(Number(postId));
-
       setPost(data);
     } catch (error) {
       console.error('포스트 로드 실패', error);
@@ -39,20 +39,44 @@ const PostDetail = () => {
     fetchPost();
   }, [postId]);
 
+  // [추가] 화려한 폭죽 애니메이션 함수
+  const fireLikeBurst = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e;
+    
+    // 화면 크기 대비 클릭 위치의 비율 계산
+    const x = clientX / window.innerWidth;
+    const y = clientY / window.innerHeight;
+
+    confetti({
+      particleCount: 15,    // 파티클 개수
+      spread: 60,          // 퍼지는 각도
+      origin: { x, y },     // 터지는 시작점 (클릭한 위치)
+      colors: ['#ef4444', '#fca5a5', '#fb7185'], // 하트와 어울리는 레드/핑크 톤
+      ticks: 200,          // 지속 시간
+      gravity: 1.2,        // 중력
+      scalar: 0.7,         // 크기 배율
+    });
+  };
+
   // 좋아요 클릭 API
-  const handleLikeClick = async () => {
+  const handleLikeClick = async (e: React.MouseEvent) => {
     if (!postId || !post) return;
 
     try {
       const response = await postLikeApi(postId);
 
       if (response.code === 200 || response.message === "Success") {
+        // [추가] 좋아요가 눌리는 시점(false -> true)에만 폭죽 이펙트 실행
+        if (!post.isLiked) {
+          fireLikeBurst(e);
+        }
+
         setPost({
           ...post,
           isLiked: response.data.isLiked,
           likeCount: response.data.likeCount,
         });
-    }
+      }
     } catch (error) {
       console.error("좋아요 처리 실패:", error);
     }
@@ -128,7 +152,8 @@ const PostDetail = () => {
                   <span className={styles.userName}>{userInfo.username}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button className={styles.likeBtn} onClick={handleLikeClick}>
+                  {/* [수정] onClick에 이벤트 객체(e) 전달 */}
+                  <button className={styles.likeBtn} onClick={(e) => handleLikeClick(e)}>
                     <Heart
                       size={20}
                       strokeWidth={1.5}
