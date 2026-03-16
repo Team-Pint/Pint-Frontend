@@ -22,23 +22,54 @@ const PostDetail = () => {
     try {
       const data = await fetchPostDetailData(Number(postId));
       setPost(data);
-    } catch (error) { console.error('로드 실패', error); } finally { setLoading(false); }
+    } catch (error) {
+      console.error('포스트 로드 실패', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { window.scrollTo(0, 0); fetchPost(); }, [postId]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchPost();
+  }, [postId]);
 
-  const handleLikeClick = async () => {
+  const handleLikeClick = async (e: React.MouseEvent) => {
     if (!postId || !post) return;
+    e.stopPropagation();
+
+    if (!post.isLiked) {
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 500);
+    }
+
     try {
       const response = await postLikeApi(postId);
       if (response.code === 200 || response.message === "Success") {
-        if (!post.isLiked) {
-          setIsAnimating(true);
-          setTimeout(() => setIsAnimating(false), 700);
-        }
-        setPost({ ...post, isLiked: response.data.isLiked, likeCount: response.data.likeCount });
+        setPost({
+          ...post,
+          isLiked: response.data.isLiked,
+          likeCount: response.data.likeCount,
+        });
       }
-    } catch (error) { console.error("좋아요 처리 실패:", error); }
+    } catch (error) {
+      console.error("좋아요 처리 실패:", error);
+    }
+  };
+
+  const handleUpdateSuccess = () => fetchPost();
+
+  const handleDeleteClick = async () => {
+    if (!postId || !window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) return;
+    try {
+      const response = await deletePostApi(Number(postId));
+      if (response.code === 200) {
+        alert("게시글이 삭제되었습니다.");
+        navigate(-1);
+      }
+    } catch (error) {
+      console.error("게시글 삭제 실패:", error);
+    }
   };
 
   if (loading) return <div className={styles.loadingState}>Loading...</div>;
@@ -61,18 +92,13 @@ const PostDetail = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <button className="relative flex items-center justify-center p-2" onClick={handleLikeClick}>
-                    {/* 링 컨테이너: absolute inset-0로 중앙 고정 */}
-                    {isAnimating && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="heart-ring-effect" />
-                      </div>
-                    )}
+                    {isAnimating && <div className="heart-ring-effect" />}
                     <Heart
                       size={22}
                       strokeWidth={1.5}
                       fill={post.isLiked ? '#ef4444' : 'none'}
                       color={post.isLiked ? '#ef4444' : 'currentColor'}
-                      className={`relative z-10 transition-transform ${isAnimating ? 'heart-active' : ''}`}
+                      className={`relative z-10 ${isAnimating ? 'heart-active' : ''}`}
                     />
                   </button>
                   <span className={styles.likeCount}>{post.likeCount}</span>
@@ -91,12 +117,12 @@ const PostDetail = () => {
               <div className="flex items-center gap-3">
                 {post.userInfo.isWriter && (
                   <>
-                    <button className={styles.moreBtn} onClick={() => setIsEditModalOpen(true)}><Pencil size={14} /> Edit</button>
-                    <button className={styles.moreBtnDanger} onClick={() => { if(window.confirm("삭제하시겠습니까?")) deletePostApi(Number(postId)).then(() => navigate(-1)); }}><Trash2 size={14} /> Delete</button>
+                    <button className={styles.moreBtn} onClick={() => setIsEditModalOpen(true)}><Pencil size={14} strokeWidth={1.5} /> Edit</button>
+                    <button className={styles.moreBtnDanger} onClick={handleDeleteClick}><Trash2 size={14} strokeWidth={1.5} /> Delete</button>
                   </>
                 )}
               </div>
-              <button className={styles.moreBtn} onClick={() => setIsMoreInfoOpen(true)}><Info size={14} /> More Info</button>
+              <button className={styles.moreBtn} onClick={() => setIsMoreInfoOpen(true)}><Info size={14} strokeWidth={1.5} /> More Info</button>
             </div>
           </div>
 
@@ -105,7 +131,16 @@ const PostDetail = () => {
           </div>
         </div>
       </div>
-      {isEditModalOpen && <PostEditModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} postId={Number(postId)} initialData={{ description: post.description, location: post.location, camera: post.camera, previewImage: post.postImgUrl }} onUpdateSuccess={fetchPost} />}
+
+      {isEditModalOpen && (
+        <PostEditModal 
+          isOpen={isEditModalOpen} 
+          onClose={() => setIsEditModalOpen(false)} 
+          postId={Number(postId)} 
+          initialData={{ description: post.description, location: post.location, camera: post.camera, previewImage: post.postImgUrl }} 
+          onUpdateSuccess={handleUpdateSuccess} 
+        />
+      )}
       {isMoreInfoOpen && <MoreInfoModal imgUrl={post.postImgUrl} filter={post.filter} onClose={() => setIsMoreInfoOpen(false)} />}
     </div>
   );
