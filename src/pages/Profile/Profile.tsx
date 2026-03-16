@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Pencil } from "lucide-react";
 import ProfileEditModal from "../../components/ProfileEditModal/ProfileEditModal";
 import type {
@@ -112,66 +112,60 @@ const Profile: React.FC<{ userId: number }> = ({ userId }) => {
     emptyState,
   } = styles;
 
-  useEffect(() => {
-    let isMounted = true;
+  const fetchProfile = useCallback(async (silent = false) => {
     if (!Number.isInteger(userId) || userId <= 0) {
       setError("잘못된 사용자 ID입니다.");
-      setProfileData(null);
       setLoading(false);
       return;
     }
 
-    const fetchProfile = async () => {
-      setLoading(true);
-      setError(null);
-      setProfileData(null); // 새 userId 조회 전에 기존 데이터 즉시 초기화
-      try {
-        const data = await fetchUserProfileData(userId);
-        const postListData: PostSummary[] = (data.postList ?? []).map(
-          (post) => ({
-            postId: post.postId,
-            imageUrl: post.imageUrl,
-            location: post.location,
-            camera: post.camera,
-            description: post.description,
-          }),
-        );
-        const likedPostListData: PostSummary[] = (data.likedPostList ?? []).map(
-          (post) => ({
-            postId: post.postId,
-            imageUrl: post.imageUrl,
-            location: post.location,
-            camera: post.camera,
-            description: post.description,
-          }),
-        );
+    if (!silent) setLoading(true);
+    setError(null);
 
-        if (!isMounted) return;
-        setProfileData({
-          ...data,
-          postList: postListData,
-          likedPostList: likedPostListData,
-        });
-        setActiveTab("feed");
-      } catch (err) {
-        console.error("프로필 조회 실패:", err);
-        if (!isMounted) return;
-        setProfileData(null);
-        // 실패 시 남은 이전 데이터를 지우고 에러 상태로 전환
-        setError("프로필 정보를 불러오지 못했습니다.");
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
+    try {
+      const data = await fetchUserProfileData(userId);
 
+      const postListData: PostSummary[] = (data.postList ?? []).map((post) => ({
+        postId: post.postId,
+        imageUrl: post.imageUrl,
+        location: post.location,
+        camera: post.camera,
+        description: post.description,
+      }));
+
+      const likedPostListData: PostSummary[] = (data.likedPostList ?? []).map((post) => ({
+        postId: post.postId,
+        imageUrl: post.imageUrl,
+        location: post.location,
+        camera: post.camera,
+        description: post.description,
+      }));
+
+      setProfileData({
+        ...data,
+        postList: postListData,
+        likedPostList: likedPostListData,
+      });
+    } catch (err) {
+      console.error("프로필 조회 실패:", err);
+      setError("프로필 정보를 불러오지 못했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+
+  useEffect(() => {
     fetchProfile();
 
+    const handleRefresh = () => fetchProfile(true);
+
+    window.addEventListener("post-uploaded", handleRefresh);
+
     return () => {
-      isMounted = false;
-    };
-  }, [userId]);
+      window.removeEventListener("post-uploaded", handleRefresh);
+    }
+  }, [fetchProfile]);
+
 
   if (loading) return <div className={loadingState}>Loading...</div>;
   if (!profileData)
