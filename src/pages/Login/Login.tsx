@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AUTH_STYLES } from '../../styles/authStyles';
-import { signIn, signUp, checkEmail } from '../../api/authApi';
+import { signIn, signUp, checkEmail, getLoginImages } from '../../api/authApi';
 
 // 스크롤 이미지 컬럼 컴포넌트
 const ScrollingColumn = ({ images, speed, direction, className }: { images: any[], speed: string, direction: 'up' | 'down', className: string }) => (
@@ -13,8 +13,13 @@ const ScrollingColumn = ({ images, speed, direction, className }: { images: any[
       {[...images, ...images].map((img, idx) => (
         <img
           key={idx}
-          src={img.url}
-          className={`${AUTH_STYLES.image} ${img.h} w-full flex-shrink-0 object-cover`}
+          src={img.imageUrl}
+          style={{ 
+            // 비율 조정을 통해 너무 길쭉해지는 것을 방지 (최소 250px ~ 최대 500px 사이 권장)
+            height: img.height ? `${Math.min(Math.max(img.height / 8, 250), 500)}px` : '350px' 
+          }}
+          // [수정] rounded-2xl을 제거하여 각진 모서리로 변경
+          className={`${AUTH_STYLES.image} w-full flex-shrink-0 object-cover`}
           alt=""
         />
       ))}
@@ -25,21 +30,16 @@ const ScrollingColumn = ({ images, speed, direction, className }: { images: any[
 const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isEmailChecked, setIsEmailChecked] = useState(false);
+  const [loginImages, setLoginImages] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    email: '',
-    pw: '',
-    verifyPw: '',
-    username: ''
-  });
+  const [formData, setFormData] = useState({ email: '', pw: '', verifyPw: '', username: '' });
 
   const {
     container, leftSection, logo, formWrapper, inputGroup,
     label, input, button, toggleText, rightSection, column
   } = AUTH_STYLES;
 
-  // 자동완성 스타일 방어용 객체
   const autofillStyle = {
     WebkitTextFillColor: 'white',
     WebkitBoxShadow: '0 0 0px 1000px black inset',
@@ -47,10 +47,22 @@ const Login: React.FC = () => {
   };
 
   useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const res = await getLoginImages();
+        if (res.code === 200) {
+          setLoginImages(res.data.postList);
+        }
+      } catch (err) {
+        console.error("이미지 로드 실패:", err);
+      }
+    };
+    fetchImages();
+  }, []);
+
+  useEffect(() => {
     const isUserLoggedIn = localStorage.getItem('userId');
-    if (isUserLoggedIn) {
-      navigate('/home', { replace: true });
-    }
+    if (isUserLoggedIn) navigate('/home', { replace: true });
   }, [navigate]);
 
   const isFormValid = useMemo(() => {
@@ -85,22 +97,13 @@ const Login: React.FC = () => {
         const res = await signIn({ email: formData.email, password: formData.pw });
         if (res.code === 200 || res.message === "Success") {
           const userId = res.data.userid ?? res.data.userId;
-          if (userId !== undefined && userId !== null) {
-            localStorage.setItem('userId', String(userId));
-            localStorage.removeItem('isMock'); 
-          }
+          if (userId !== undefined && userId !== null) localStorage.setItem('userId', String(userId));
           alert("로그인 성공!");
           navigate('/home', { replace: true });
-        } else {
-          alert("로그인 실패");
         }
       } else {
         if (formData.pw !== formData.verifyPw) return alert("비밀번호가 일치하지 않습니다.");
-        const res = await signUp({
-          email: formData.email,
-          password: formData.pw,
-          username: formData.username
-        });
+        const res = await signUp({ email: formData.email, password: formData.pw, username: formData.username });
         if (res.code === 200 || res.message === "Success") {
           alert("회원가입 완료! 로그인을 진행해주세요.");
           setFormData({ email: '', pw: '', verifyPw: '', username: '' });
@@ -109,24 +112,9 @@ const Login: React.FC = () => {
         }
       }
     } catch (err: any) {
-      if (isLogin && formData.email === "admin@test.com") {
-        localStorage.setItem('userId', 'mock-user-123');
-        localStorage.setItem('isMock', 'true'); 
-        alert("테스트 계정으로 로그인되었습니다.");
-        navigate('/home', { replace: true });
-        return;
-      }
-      alert(err.response?.data?.message || "로그인 정보가 올바르지 않거나 오류가 발생했습니다.");
+      alert(err.response?.data?.message || "오류가 발생했습니다.");
     }
   };
-
-  const mockImages = [
-    { h: "h-[300px]", url: "https://picsum.photos/seed/1/500/800" },
-    { h: "h-[220px]", url: "https://picsum.photos/seed/2/500/500" },
-    { h: "h-[400px]", url: "https://picsum.photos/seed/3/500/1000" },
-    { h: "h-[280px]", url: "https://picsum.photos/seed/4/500/650" },
-    { h: "h-[350px]", url: "https://picsum.photos/seed/5/500/750" },
-  ];
 
   return (
     <div className={container}>
@@ -172,27 +160,11 @@ const Login: React.FC = () => {
           <div className={`flex flex-col gap-4 transition-all duration-500 ease-in-out overflow-hidden ${isLogin ? 'max-h-0 opacity-0' : 'max-h-[250px] opacity-100'}`}>
             <div className={inputGroup}>
               <label className={label}>VERIFY PASSWORD</label>
-              <input
-                name="verifyPw"
-                type="password"
-                className={input}
-                placeholder="••••••••"
-                value={formData.verifyPw}
-                onChange={handleChange}
-                style={autofillStyle}
-              />
+              <input name="verifyPw" type="password" className={input} placeholder="••••••••" value={formData.verifyPw} onChange={handleChange} style={autofillStyle} />
             </div>
             <div className={inputGroup}>
               <label className={label}>USERNAME</label>
-              <input
-                name="username"
-                type="text"
-                className={input}
-                placeholder="Your unique name"
-                value={formData.username}
-                onChange={handleChange}
-                style={autofillStyle}
-              />
+              <input name="username" type="text" className={input} placeholder="Your unique name" value={formData.username} onChange={handleChange} style={autofillStyle} />
             </div>
           </div>
           <div className="flex flex-col gap-4 mt-6">
@@ -209,26 +181,24 @@ const Login: React.FC = () => {
           </div>
         </form>
       </div>
-      <div className={`${rightSection} gap-6 px-6`}>
-        <ScrollingColumn images={mockImages} speed="50s" direction="up" className={column} />
-        <ScrollingColumn images={[...mockImages].reverse()} speed="65s" direction="down" className={column} />
-        <ScrollingColumn images={mockImages} speed="45s" direction="up" className={column} />
+      
+      {/* 이미지 스크롤 영역: 속도를 훨씬 느리게(80s~120s) 조정 */}
+      <div className={`${rightSection} gap-6 px-6 overflow-hidden`}>
+        {loginImages.length > 0 && (
+          <>
+            <ScrollingColumn images={loginImages} speed="100s" direction="up" className={column} />
+            <ScrollingColumn images={[...loginImages].reverse()} speed="120s" direction="down" className={column} />
+            <ScrollingColumn images={loginImages} speed="80s" direction="up" className={column} />
+          </>
+        )}
       </div>
+
       <style>{`
         @keyframes scroll-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
         @keyframes scroll-down { from { transform: translateY(-50%); } to { transform: translateY(0); } }
         .animate-scroll-up { animation: scroll-up linear infinite; }
         .animate-scroll-down { animation: scroll-down linear infinite; }
-
-        input::placeholder {
-          -webkit-text-fill-color: rgba(255, 255, 255, 0.5) !important;
-          color: rgba(255, 255, 255, 0.3) !important;
-          opacity: 1;
-        }
-
-        input::-webkit-input-placeholder {
-          -webkit-text-fill-color: rgba(255, 255, 255, 0.5) !important;
-        }
+        input::placeholder { -webkit-text-fill-color: rgba(255, 255, 255, 0.5) !important; color: rgba(255, 255, 255, 0.3) !important; opacity: 1; }
       `}</style>
     </div>
   );

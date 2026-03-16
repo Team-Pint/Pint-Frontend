@@ -22,15 +22,20 @@ export const checkEmail = async (email: string) => {
   return response.data;
 };
 
+// 로그인 화면 이미지 목록 가져오기 (추가됨)
+export const getLoginImages = async () => {
+  const response = await api.get('/auth/posts');
+  return response.data;
+};
+
 // 로그아웃
 export const signOut = async () => {
   try {
-        const response = await api.post('/auth/signout');
-  
-        if (response.data.code === 200 || response.data.message === "Success") {
-          return response.data;
-        }
-      } catch (error) {
-        console.error("통신 실패: ", error);
-      }
-}
+    const response = await api.post('/auth/signout');
+    if (response.data.code === 200 || response.data.message === "Success") {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("통신 실패: ", error);
+  }
+};
