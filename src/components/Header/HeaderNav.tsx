@@ -10,6 +10,7 @@ import { useUserStore } from '../../store/useUserStore';
 
 const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { clearUser } = useUserStore();
   
   const { profileImageUrl, setProfileImageUrl } = useUserStore();
 
@@ -27,20 +28,25 @@ const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
   const { avatar: sharedAvatarStyle } = HEADER_STYLES;
 
   useEffect(() => {
-    if (profileImageUrl) return;
+    // myId가 없으면 호출하지 않음 (비로그인 상태 방어)
+    if (!myId) return;
 
     const fetchProfileImage = async () => {
       try {
         const response = await headerApi();
         if (response.code === 200 || response.message === "Success") {
+          // 서버 응답 데이터 필드명이 profileImgUrl인지 꼭 확인하세요!
           setProfileImageUrl(response.data.profileImgUrl);
         }
       } catch (error) {
         console.error("프로필 로드 실패: ", error);
+        // 실패 시 스토어를 비워 기본 이미지가 나오게 유도
+        setProfileImageUrl("");
       }
-    }
+    };
+
     fetchProfileImage();
-  }, [profileImageUrl, setProfileImageUrl]);
+  }, [myId, setProfileImageUrl]);
 
   // 3. 드롭다운 외부 클릭 시 닫기 로직
   useEffect(() => {
@@ -67,6 +73,8 @@ const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
   const handleLogout = async () => {
     try {
       await signOut();
+
+      clearUser();
 
       localStorage.removeItem("userId");
       localStorage.clear();
