@@ -117,7 +117,7 @@ const InfoInputStep: React.FC<Props> = ({ data, setData, isLoading, handleUpload
                     disabled={isSubmitDisabled}
                     className={submitBtn}
                 >
-                    {isLoading ? "Uploading..." : "Upload"}
+                    {isLoading ? (mode === 'upload' ? "Uploading..." : "Saving...") : (mode === 'upload' ? "Upload" : "Edit")}
                 </button>
             </div>
         </div>
