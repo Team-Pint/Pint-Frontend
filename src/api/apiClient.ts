@@ -7,9 +7,9 @@ const api = axios.create({
   xsrfHeaderName: 'X-XSRF-TOKEN',
 });
 
-export const fetchCsrfToken = async () => {
-  await api.get('/csrf-token');
-};
+// export const fetchCsrfToken = async () => {
+//   await api.get('/csrf-token');
+// };
 
 api.interceptors.response.use(
   (response) => response,
