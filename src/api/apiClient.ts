@@ -2,12 +2,34 @@ import axios from "axios";
 
 // 1. document.cookie 문자열에서 특정 쿠키 값만 파싱해오는 유틸리티 함수
 const getCookieValue = (name: string): string | null => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
+  if (typeof document === "undefined" || !document.cookie) {
+    return null;
+  }
 
-  if (parts.length === 2) {
-    // pop() 대신 인덱스 [1]을, shift() 대신 인덱스 [0]을 사용하여 안전하게 추출합니다.
-    return parts[1].split(";")[0];
+  const cookies = document.cookie.split(";");
+
+  for (const cookie of cookies) {
+    const trimmed = cookie.trim();
+    const separatorIndex = trimmed.indexOf("=");
+
+    if (separatorIndex <= 0) {
+      continue;
+    }
+
+    const key = trimmed.slice(0, separatorIndex);
+
+    if (key !== name) {
+      continue;
+    }
+
+    const rawValue = trimmed.slice(separatorIndex + 1);
+
+    try {
+      return decodeURIComponent(rawValue);
+    } catch {
+      // 인코딩되지 않은 값은 원본 그대로 사용
+      return rawValue;
+    }
   }
 
   return null;
@@ -25,6 +47,8 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const csrfToken = getCookieValue("XSRF-TOKEN");
+
+    console.log(`csrfToken = ${csrfToken}`);
 
     if (csrfToken) {
       config.headers["X-XSRF-TOKEN"] = csrfToken;
