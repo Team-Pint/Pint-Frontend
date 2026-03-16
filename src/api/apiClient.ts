@@ -2,6 +2,8 @@ import axios from "axios";
 
 // 1. document.cookie 문자열에서 특정 쿠키 값만 파싱해오는 유틸리티 함수
 const getCookieValue = (name: string): string | null => {
+  console.log(`document.cookie = ${document.cookie}`);
+
   if (typeof document === "undefined" || !document.cookie) {
     return null;
   }
