@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  // .env 파일이 없다면 여기에 직접 "https://pintpint.duckdns.org"를 입력하세요.
-  baseURL: import.meta.env.VITE_API_BASE_URL || "https://pintpint.duckdns.org",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });
 

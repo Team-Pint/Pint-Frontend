@@ -39,6 +39,13 @@ const Login: React.FC = () => {
     label, input, button, toggleText, rightSection, column
   } = AUTH_STYLES;
 
+  // 자동완성 스타일 방어용 객체
+  const autofillStyle = {
+    WebkitTextFillColor: 'white',
+    WebkitBoxShadow: '0 0 0px 1000px black inset',
+    transition: 'background-color 5000s ease-in-out 0s',
+  };
+
   useEffect(() => {
     const isUserLoggedIn = localStorage.getItem('userId');
     if (isUserLoggedIn) {
@@ -50,7 +57,7 @@ const Login: React.FC = () => {
     const { email, pw, verifyPw, username } = formData;
     if (isLogin) return !!(email && pw);
     return !!(email && pw && verifyPw && username && isEmailChecked);
-  }, [formData, isLogin, isEmailChecked])
+  }, [formData, isLogin, isEmailChecked]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -75,7 +82,6 @@ const Login: React.FC = () => {
     e.preventDefault();
     try {
       if (isLogin) {
-        // --- 로그인 로직 ---
         const res = await signIn({ email: formData.email, password: formData.pw });
         if (res.code === 200 || res.message === "Success") {
           const userId = res.data.userid ?? res.data.userId;
@@ -89,33 +95,20 @@ const Login: React.FC = () => {
           alert("로그인 실패");
         }
       } else {
-        // --- 회원가입 로직 ---
         if (formData.pw !== formData.verifyPw) return alert("비밀번호가 일치하지 않습니다.");
-        
         const res = await signUp({
           email: formData.email,
           password: formData.pw,
           username: formData.username
         });
-
         if (res.code === 200 || res.message === "Success") {
           alert("회원가입 완료! 로그인을 진행해주세요.");
-          
-          // [수정] 회원가입 성공 시 입력 필드 초기화
-          setFormData({
-            email: '',
-            pw: '',
-            verifyPw: '',
-            username: ''
-          });
+          setFormData({ email: '', pw: '', verifyPw: '', username: '' });
           setIsEmailChecked(false);
-          
-          // 로그인 모드로 전환
           setIsLogin(true);
         }
       }
     } catch (err: any) {
-      // --- 가짜 로그인(Mock Login) 로직 ---
       if (isLogin && formData.email === "admin@test.com") {
         localStorage.setItem('userId', 'mock-user-123');
         localStorage.setItem('isMock', 'true'); 
@@ -151,6 +144,7 @@ const Login: React.FC = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                style={autofillStyle}
               />
               <button
                 type="button"
@@ -172,6 +166,7 @@ const Login: React.FC = () => {
               value={formData.pw}
               onChange={handleChange}
               required
+              style={autofillStyle}
             />
           </div>
           <div className={`flex flex-col gap-4 transition-all duration-500 ease-in-out overflow-hidden ${isLogin ? 'max-h-0 opacity-0' : 'max-h-[250px] opacity-100'}`}>
@@ -184,6 +179,7 @@ const Login: React.FC = () => {
                 placeholder="••••••••"
                 value={formData.verifyPw}
                 onChange={handleChange}
+                style={autofillStyle}
               />
             </div>
             <div className={inputGroup}>
@@ -195,6 +191,7 @@ const Login: React.FC = () => {
                 placeholder="Your unique name"
                 value={formData.username}
                 onChange={handleChange}
+                style={autofillStyle}
               />
             </div>
           </div>
@@ -203,9 +200,8 @@ const Login: React.FC = () => {
               {isLogin ? "SIGN IN" : "SIGN UP"}
             </button>
             <p className={toggleText} onClick={() => {
-              setIsLogin(!isLogin)
+              setIsLogin(!isLogin);
               setIsEmailChecked(false);
-              // [수정] 텍스트 클릭하여 전환할 때도 필드 초기화
               setFormData({ email: '', pw: '', verifyPw: '', username: '' });
             }}>
               {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Log In"}
