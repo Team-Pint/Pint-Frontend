@@ -8,7 +8,7 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const csrfToken = localStorage.getItem("csrfToken");
   if (csrfToken) {
-    config.headers["X-XSRF-TOKEN"] = csrfToken;
+    config.headers["X-XSRF-TOKEN"] = String(csrfToken);
   }
   return config;
 });

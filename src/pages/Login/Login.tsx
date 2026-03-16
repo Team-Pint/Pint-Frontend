@@ -144,10 +144,10 @@ const Login: React.FC = () => {
           // 로그인 성공 시, CSRF 토큰 가져오기
           const csrfToken = await fetchCsrfToken();
           if (csrfToken) {
-            localStorage.setItem("csrfToken", csrfToken);
+            localStorage.setItem("csrfToken", String(csrfToken));
           }
 
-          api.defaults.headers.common["X-XSRF-TOKEN"] = csrfToken;
+          api.defaults.headers.common["X-XSRF-TOKEN"] = String(csrfToken);
 
           navigate("/home", { replace: true });
         }
