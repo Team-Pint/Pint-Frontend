@@ -36,7 +36,7 @@ const HeaderNav: React.FC<{ myId?: number }> = ({ myId }) => {
         const response = await headerApi();
         if (response.code === 200 || response.message === "Success") {
           // 서버 응답 데이터 필드명이 profileImgUrl인지 꼭 확인하세요!
-          setProfileImageUrl(response.data.profileImgUrl);
+          setProfileImageUrl(response.data.profileImage);
         }
       } catch (error) {
         console.error("프로필 로드 실패: ", error);
