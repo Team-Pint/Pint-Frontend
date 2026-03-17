@@ -18,7 +18,7 @@ const PhotoSelectStep: React.FC<Props> = ({ previewImage, handleImageChange, onR
             {!previewImage ? (
                 // 사진 선택 전
                 <div className={beforeSection}>
-                    <input type="file" accept="image/*" onChange={handleImageChange} id="file-input" className={fileInput} />
+                    <input type="file" accept=".jpg, .png, .jpeg, .heic" onChange={handleImageChange} id="file-input" className={fileInput} />
                     <label htmlFor="file-input" className={label}>
                         <div className={iconSection}>
                             <img src="/images/ic_upload.svg" alt="사진 업로드" className={icon} />
